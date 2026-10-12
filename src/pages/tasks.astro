@@ -125,7 +125,7 @@ import Sidebar from "../components/Sidebar.astro";
 
                     <label for="task-project-input">Project</label>
                     <select id="task-project-input" name="project">
-                        <option value="">Tanpa proyek</option>
+                        <option value="">Without project</option>
                     </select>
 
                     <div class="modal-fields">
@@ -957,7 +957,7 @@ import Sidebar from "../components/Sidebar.astro";
                 const details = createElement("div", "task-details");
                 details.append(
                     createElement("span", "task-title", task.title),
-                    createElement("span", "task-project", task.project || "Tanpa proyek"),
+                    createElement("span", "task-project", task.project || "Without project"),
                 );
                 main.append(checkbox, details);
 
@@ -1118,7 +1118,7 @@ import Sidebar from "../components/Sidebar.astro";
             projects = (data ?? []) as Project[];
             projectInput.replaceChildren();
 
-            const noProjectOption = createElement("option", "", "Tanpa proyek");
+            const noProjectOption = createElement("option", "", "Without project");
             noProjectOption.value = "";
             projectInput.append(noProjectOption);
 

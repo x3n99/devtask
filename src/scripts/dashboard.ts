@@ -86,7 +86,7 @@ import { supabase } from "../lib/supabase.js";
 
             const noProjectOption = document.createElement("option");
             noProjectOption.value = "";
-            noProjectOption.textContent = "Tanpa proyek";
+            noProjectOption.textContent = "Without project";
             projectInput.append(noProjectOption);
 
             projects.forEach((project) => {
