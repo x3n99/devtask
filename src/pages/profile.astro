@@ -1,0 +1,644 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Sidebar from "../components/Sidebar.astro";
+---
+
+<BaseLayout title="DevTask — Profile">
+    <Sidebar />
+
+    <main class="profile-page">
+        <header class="page-header">
+            <div>
+                <p class="eyebrow">YOUR WORKSPACE</p>
+                <h1>My <span>Profile.</span></h1>
+                <p class="page-description">
+                    Manage your personal information and account security.
+                </p>
+            </div>
+        </header>
+
+        <div class="profile-layout">
+            <section class="profile-card">
+                <div class="card-heading">
+                    <div>
+                        <h2>Personal Information</h2>
+                        <p>Update your name and account email.</p>
+                    </div>
+                    <span class="heading-icon">♙</span>
+                </div>
+
+                <div class="profile-preview">
+                    <div class="profile-avatar" id="profile-avatar">U</div>
+                    <div class="preview-info">
+                        <strong id="preview-name">Loading...</strong>
+                        <span id="preview-email">Loading account...</span>
+                    </div>
+                    <span class="account-badge">PERSONAL</span>
+
+                    <button type="button" class="logout-button" id="logout-button">
+                        ↪ Logout
+                    </button>
+                </div>
+
+                <form id="profile-form">
+                    <label for="full-name">Full Name</label>
+                    <input
+                        id="full-name"
+                        name="full_name"
+                        type="text"
+                        placeholder="Enter your full name"
+                        maxlength="80"
+                        required
+                    />
+
+                    <label for="email">Email Address</label>
+                    <input
+                        id="email"
+                        name="email"
+                        type="email"
+                        placeholder="you@example.com"
+                        required
+                    />
+                    <p class="field-hint">
+                        Changing your email may require confirmation through
+                        your email inbox.
+                    </p>
+
+                    <div class="form-actions">
+                        <button class="primary-button" id="save-profile" type="submit">
+                            Save Changes
+                        </button>
+                    </div>
+                </form>
+            </section>
+
+            <section class="profile-card security-card">
+                <div class="card-heading">
+                    <div>
+                        <h2>Account Security</h2>
+                        <p>Keep your account secure with a strong password.</p>
+                    </div>
+                    <span class="heading-icon">⌑</span>
+                </div>
+
+                <form id="password-form">
+                    <label for="new-password">New Password</label>
+                    <input
+                        id="new-password"
+                        name="new_password"
+                        type="password"
+                        placeholder="At least 6 characters"
+                        minlength="6"
+                        autocomplete="new-password"
+                        required
+                    />
+
+                    <label for="confirm-password">Confirm New Password</label>
+                    <input
+                        id="confirm-password"
+                        name="confirm_password"
+                        type="password"
+                        placeholder="Re-enter your new password"
+                        minlength="6"
+                        autocomplete="new-password"
+                        required
+                    />
+
+                    <p class="field-hint">
+                        Use a password you don't use on other websites.
+                    </p>
+
+                    <div class="form-actions">
+                        <button class="primary-button" id="save-password" type="submit">
+                            Update Password
+                        </button>
+                    </div>
+                </form>
+            </section>
+        </div>
+
+        <p class="status-message" id="status-message" role="status" aria-live="polite"></p>
+    </main>
+</BaseLayout>
+
+<script>
+    import { supabase } from "../lib/supabase";
+
+    const nameInput = document.querySelector<HTMLInputElement>("#full-name")!;
+    const emailInput = document.querySelector<HTMLInputElement>("#email")!;
+    const previewName = document.querySelector<HTMLElement>("#preview-name")!;
+    const previewEmail = document.querySelector<HTMLElement>("#preview-email")!;
+    const avatar = document.querySelector<HTMLElement>("#profile-avatar")!;
+    const statusMessage = document.querySelector<HTMLElement>("#status-message")!;
+
+    const profileForm = document.querySelector<HTMLFormElement>("#profile-form")!;
+    const passwordForm = document.querySelector<HTMLFormElement>("#password-form")!;
+    const saveProfileButton = document.querySelector<HTMLButtonElement>("#save-profile")!;
+    const savePasswordButton = document.querySelector<HTMLButtonElement>("#save-password")!;
+
+    function getInitials(name: string) {
+        return name
+            .trim()
+            .split(/\s+/)
+            .filter(Boolean)
+            .slice(0, 2)
+            .map((part) => part.charAt(0).toUpperCase())
+            .join("") || "U";
+    }
+
+    function showStatus(message: string, type: "success" | "error") {
+        statusMessage.textContent = message;
+        statusMessage.className = `status-message ${type}`;
+    }
+
+    function setButtonLoading(
+        button: HTMLButtonElement,
+        loading: boolean,
+        normalText: string,
+        loadingText: string
+    ) {
+        button.disabled = loading;
+        button.textContent = loading ? loadingText : normalText;
+    }
+
+    async function loadProfile() {
+        const { data, error } = await supabase.auth.getUser();
+
+        if (error || !data.user) {
+            window.location.href = "/login";
+            return;
+        }
+
+        const user = data.user;
+        const name =
+            user.user_metadata?.full_name ||
+            user.user_metadata?.name ||
+            user.email?.split("@")[0] ||
+            "User";
+
+        nameInput.value = name;
+        emailInput.value = user.email || "";
+        previewName.textContent = name;
+        previewEmail.textContent = user.email || "No email";
+        avatar.textContent = getInitials(name);
+    }
+
+    nameInput.addEventListener("input", () => {
+        const name = nameInput.value.trim() || "User";
+        previewName.textContent = name;
+        avatar.textContent = getInitials(name);
+    });
+
+    emailInput.addEventListener("input", () => {
+        previewEmail.textContent = emailInput.value || "Enter your email";
+    });
+
+    profileForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        const fullName = nameInput.value.trim();
+        const email = emailInput.value.trim();
+
+        if (!fullName || !email) {
+            showStatus("Name and email are required.", "error");
+            return;
+        }
+
+        setButtonLoading(saveProfileButton, true, "Save Changes", "Saving...");
+
+        const { data: userData, error: userError } = await supabase.auth.getUser();
+
+        if (userError || !userData.user) {
+            window.location.href = "/login";
+            return;
+        }
+
+        const currentEmail = userData.user.email || "";
+        const emailChanged = email.toLowerCase() !== currentEmail.toLowerCase();
+
+        const updatePayload: {
+            data: { full_name: string };
+            email?: string;
+        } = {
+            data: { full_name: fullName }
+        };
+
+        if (emailChanged) {
+            updatePayload.email = email;
+        }
+
+        const { data, error } = await supabase.auth.updateUser(updatePayload);
+
+        setButtonLoading(saveProfileButton, false, "Save Changes", "Saving...");
+
+        if (error) {
+            showStatus(error.message, "error");
+            return;
+        }
+
+        previewName.textContent = fullName;
+        avatar.textContent = getInitials(fullName);
+
+        if (emailChanged) {
+            const returnedEmail = data.user?.email || currentEmail;
+            previewEmail.textContent = returnedEmail;
+
+            if (returnedEmail.toLowerCase() !== email.toLowerCase()) {
+                showStatus(
+                    "Name saved. Check your email to confirm the email address change.",
+                    "success"
+                );
+            } else {
+                showStatus("Profile updated successfully.", "success");
+            }
+        } else {
+            previewEmail.textContent = currentEmail;
+            showStatus("Profile updated successfully.", "success");
+        }
+    });
+
+    passwordForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        const newPassword = document.querySelector<HTMLInputElement>("#new-password")!.value;
+        const confirmPassword = document.querySelector<HTMLInputElement>("#confirm-password")!.value;
+
+        if (newPassword.length < 6) {
+            showStatus("Password must contain at least 6 characters.", "error");
+            return;
+        }
+
+        if (newPassword !== confirmPassword) {
+            showStatus("Passwords do not match.", "error");
+            return;
+        }
+
+        setButtonLoading(savePasswordButton, true, "Update Password", "Updating...");
+
+        const { error } = await supabase.auth.updateUser({
+            password: newPassword
+        });
+
+        setButtonLoading(savePasswordButton, false, "Update Password", "Updating...");
+
+        if (error) {
+            showStatus(error.message, "error");
+            return;
+        }
+
+        passwordForm.reset();
+        showStatus("Password updated successfully.", "success");
+    });
+
+    const logoutButton = document.querySelector<HTMLButtonElement>(
+        "#logout-button"
+    );
+
+    logoutButton?.addEventListener("click", async () => {
+        logoutButton.disabled = true;
+        logoutButton.textContent = "Logging out...";
+
+        const { error } = await supabase.auth.signOut();
+
+        if (error) {
+            logoutButton.disabled = false;
+            logoutButton.textContent = "↪ Logout";
+            showStatus(`Logout failed: ${error.message}`, "error");
+            return;
+        }
+
+        window.location.href = "/login";
+    });
+
+    loadProfile();
+</script>
+
+<style>
+    .profile-page {
+        box-sizing: border-box;
+        min-height: 100vh;
+        min-width: 0;
+        margin-left: 250px;
+        padding: 42px 40px;
+        color: #e8eaf0;
+    }
+
+    .profile-page * {
+        box-sizing: border-box;
+    }
+
+    .page-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        margin-bottom: 32px;
+    }
+
+    .eyebrow {
+        margin: 0 0 12px;
+        color: #9990ed;
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: 1.8px;
+    }
+
+    .page-header h1 {
+        margin: 0;
+        color: #f0f0f7;
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: clamp(30px, 4vw, 40px);
+        font-weight: 800;
+        letter-spacing: -1.5px;
+        line-height: 1.2;
+    }
+
+    .page-header h1 span {
+        color: #9b8dff;
+    }
+
+    .page-description {
+        margin: 12px 0 0;
+        color: #858b9d;
+        font-size: 13px;
+        line-height: 1.7;
+    }
+
+    .profile-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+        align-items: start;
+        gap: 22px;
+        max-width: 1100px;
+    }
+
+    .profile-card {
+        min-width: 0;
+        padding: 25px;
+        border: 1px solid #292d3c;
+        border-radius: 14px;
+        background: #141722;
+    }
+
+    .card-heading {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 15px;
+        margin-bottom: 24px;
+    }
+
+    .card-heading h2 {
+        margin: 0;
+        color: #f0f0f7;
+        font-size: 15px;
+        font-weight: 750;
+        letter-spacing: -0.3px;
+    }
+
+    .card-heading p {
+        margin: 8px 0 0;
+        color: #858b9d;
+        font-size: 11px;
+        line-height: 1.7;
+    }
+
+    .heading-icon {
+        display: grid;
+        width: 36px;
+        height: 36px;
+        flex-shrink: 0;
+        place-items: center;
+        border: 1px solid #35304f;
+        border-radius: 9px;
+        color: #bcb2ff;
+        background: #242038;
+        font-size: 19px;
+    }
+
+    .profile-preview {
+        display: flex;
+        min-width: 0;
+        align-items: center;
+        gap: 13px;
+        margin-bottom: 25px;
+        padding: 16px;
+        border: 1px solid #292d3c;
+        border-radius: 10px;
+        background: #191c29;
+    }
+
+    .profile-avatar {
+        display: grid;
+        width: 49px;
+        height: 49px;
+        flex-shrink: 0;
+        place-items: center;
+        border: 1px solid #514780;
+        border-radius: 50%;
+        color: #d6d0ff;
+        background: #302b50;
+        font-size: 14px;
+        font-weight: 800;
+    }
+
+    .preview-info {
+        display: flex;
+        min-width: 0;
+        flex: 1;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .preview-info strong,
+    .preview-info span {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .preview-info strong {
+        color: #f0f0f7;
+        font-size: 13px;
+    }
+
+    .preview-info span {
+        color: #858b9d;
+        font-size: 11px;
+    }
+
+    .account-badge {
+        flex-shrink: 0;
+        padding: 5px 7px;
+        border: 1px solid #35304f;
+        border-radius: 5px;
+        color: #bcb2ff;
+        font-size: 8px;
+        font-weight: 800;
+        letter-spacing: 0.7px;
+    }
+
+    .logout-button {
+        min-height: 38px;
+        margin-left: auto;
+        padding: 0 13px;
+        border: 1px solid #49303b;
+        border-radius: 8px;
+        color: #ff9b9b;
+        background: #211820;
+        font: inherit;
+        font-size: 11px;
+        cursor: pointer;
+    }
+
+    .logout-button:hover {
+        background: #35212b;
+    }
+
+    .logout-button:disabled {
+        cursor: wait;
+        opacity: 0.6;
+    }
+
+    .profile-card form {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .profile-card label {
+        margin: 0 0 9px;
+        color: #cdd0dc;
+        font-size: 11px;
+        font-weight: 650;
+    }
+
+    .profile-card input {
+        width: 100%;
+        min-width: 0;
+        height: 43px;
+        margin-bottom: 20px;
+        padding: 0 13px;
+        border: 1px solid #303447;
+        border-radius: 8px;
+        outline: none;
+        color: #f0f0f7;
+        background: #10121b;
+        font-family: inherit;
+        font-size: 12px;
+        transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .profile-card input::placeholder {
+        color: #62697c;
+    }
+
+    .profile-card input:focus {
+        border-color: #7969e9;
+        box-shadow: 0 0 0 3px rgb(121 105 233 / 12%);
+    }
+
+    .field-hint {
+        margin: -12px 0 20px;
+        color: #777e91;
+        font-size: 10px;
+        line-height: 1.7;
+    }
+
+    .form-actions {
+        display: flex;
+        justify-content: flex-start;
+        margin-top: 2px;
+    }
+
+    .primary-button {
+        min-height: 40px;
+        padding: 0 16px;
+        border: 1px solid #8879f5;
+        border-radius: 8px;
+        color: white;
+        background: #7969e9;
+        font-family: inherit;
+        font-size: 11px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: background 0.2s, opacity 0.2s;
+    }
+
+    .primary-button:hover {
+        background: #8b7cff;
+    }
+
+    .primary-button:disabled {
+        cursor: wait;
+        opacity: 0.65;
+    }
+
+    .status-message {
+        max-width: 1100px;
+        margin: 18px 0 0;
+        font-size: 12px;
+        line-height: 1.7;
+    }
+
+    .status-message:empty {
+        display: none;
+    }
+
+    .status-message.success {
+        color: #7cdaa8;
+    }
+
+    .status-message.error {
+        color: #ff9696;
+    }
+
+    @media (max-width: 1150px) {
+        .profile-page {
+            padding: 35px 28px;
+        }
+
+        .profile-layout {
+            grid-template-columns: minmax(0, 1fr);
+            max-width: 720px;
+        }
+    }
+
+    @media (max-width: 760px) {
+        .profile-page {
+            width: 100%;
+            margin-left: 0;
+            padding: 78px 20px 30px;
+        }
+
+        .page-header {
+            margin-bottom: 25px;
+        }
+
+        .profile-layout {
+            gap: 16px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .profile-page {
+            padding-right: 15px;
+            padding-left: 15px;
+        }
+
+        .profile-card {
+            padding: 18px;
+        }
+
+        .profile-preview {
+            gap: 10px;
+            padding: 12px;
+        }
+
+        .account-badge {
+            display: none;
+        }
+
+        .page-description {
+            max-width: 290px;
+        }
+    }
+</style>

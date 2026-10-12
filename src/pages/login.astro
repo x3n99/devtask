@@ -1,0 +1,245 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+
+<BaseLayout title="Login | DevTask">
+  <main class="auth-page">
+    <section class="auth-card">
+      <a href="/" class="brand">Dev<span>Task</span></a>
+
+      <div class="auth-heading">
+        <p class="eyebrow">WELCOME BACK</p>
+        <h1>Sign in to your account</h1>
+        <p class="subtitle">Manage your tasks and stay productive.</p>
+      </div>
+
+      <form id="login-form">
+        <div class="form-group">
+          <label for="login-email">Email address</label>
+          <input
+            id="login-email"
+            name="email"
+            type="email"
+            placeholder="you@example.com"
+            autocomplete="email"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="login-password">Password</label>
+          <input
+            id="login-password"
+            name="password"
+            type="password"
+            placeholder="Enter your password"
+            autocomplete="current-password"
+            required
+          />
+        </div>
+
+        <p id="login-message" class="message" role="status" aria-live="polite"></p>
+
+        <button id="login-submit" type="submit">Sign in</button>
+      </form>
+
+      <p class="auth-footer">
+        Don't have an account?
+        <a href="/register">Create one</a>
+      </p>
+    </section>
+  </main>
+</BaseLayout>
+
+<script>
+  import { supabase } from "../lib/supabase.js";
+
+  const form = document.querySelector<HTMLFormElement>("#login-form");
+  const emailInput = document.querySelector<HTMLInputElement>("#login-email");
+  const passwordInput = document.querySelector<HTMLInputElement>("#login-password");
+  const message = document.querySelector<HTMLParagraphElement>("#login-message");
+  const submitButton = document.querySelector<HTMLButtonElement>("#login-submit");
+
+  form?.addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    if (!emailInput || !passwordInput || !message || !submitButton) return;
+
+    message.textContent = "";
+    message.classList.remove("success");
+
+    submitButton.disabled = true;
+    submitButton.textContent = "Signing in...";
+
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email: emailInput.value.trim(),
+        password: passwordInput.value,
+      });
+
+      if (error) throw error;
+
+      window.location.assign("/");
+    } catch (error) {
+      message.textContent =
+        error instanceof Error
+          ? error.message
+          : "Unable to sign in. Please try again.";
+    } finally {
+      submitButton.disabled = false;
+      submitButton.textContent = "Sign in";
+    }
+  });
+</script>
+
+<style is:global>
+  .auth-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    background: #0b0d12;
+    color: #f3f4f6;
+  }
+
+  .auth-card {
+    width: 100%;
+    max-width: 420px;
+    padding: 36px;
+    background: #12151d;
+    border: 1px solid #262b36;
+    border-radius: 16px;
+  }
+
+  .brand {
+    display: inline-block;
+    margin-bottom: 42px;
+    color: #f3f4f6;
+    font-size: 25px;
+    font-weight: 750;
+    letter-spacing: -1px;
+    text-decoration: none;
+  }
+
+  .brand span {
+    color: #8b83ff;
+  }
+
+  .eyebrow {
+    margin: 0 0 10px;
+    color: #a39aff;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+  }
+
+  .auth-heading h1 {
+    margin: 0;
+    font-size: 27px;
+    line-height: 1.3;
+    letter-spacing: -0.8px;
+  }
+
+  .subtitle {
+    margin: 10px 0 28px;
+    color: #969baa;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+    margin-bottom: 20px;
+  }
+
+  .form-group label {
+    color: #d8dbe4;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .form-group input {
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 46px;
+    padding: 0 13px;
+    color: #f3f4f6;
+    background: #0d1017;
+    border: 1px solid #303542;
+    border-radius: 8px;
+    outline: none;
+    font: inherit;
+    font-size: 14px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  .form-group input::placeholder {
+    color: #666d7c;
+  }
+
+  .form-group input:focus {
+    border-color: #8b83ff;
+    box-shadow: 0 0 0 3px rgb(139 131 255 / 12%);
+  }
+
+  .message {
+    min-height: 0;
+    margin: 0 0 14px;
+    color: #ff8585;
+    font-size: 13px;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+  }
+
+  #login-submit {
+    width: 100%;
+    min-height: 46px;
+    color: #fff;
+    background: #7668f5;
+    border: 0;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s, opacity 0.2s;
+  }
+
+  #login-submit:hover {
+    background: #887cff;
+  }
+
+  #login-submit:disabled {
+    opacity: 0.65;
+    cursor: wait;
+  }
+
+  .auth-footer {
+    margin: 24px 0 0;
+    color: #969baa;
+    font-size: 13px;
+    text-align: center;
+  }
+
+  .auth-footer a {
+    color: #a39aff;
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .auth-footer a:hover {
+    text-decoration: underline;
+  }
+
+  @media (max-width: 480px) {
+    .auth-card {
+      padding: 26px 22px;
+    }
+
+    .brand {
+      margin-bottom: 32px;
+    }
+  }
+</style>

@@ -1,59 +1,493 @@
 ---
-import BaseHead from '../components/BaseHead.astro';
-import Footer from '../components/Footer.astro';
-import Header from '../components/Header.astro';
-import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Sidebar from "../components/Sidebar.astro";
+import StatCard from "../components/StatCard.astro";
+import WeeklyProgress from "../components/WeeklyProgress.astro";
+import TaskList from "../components/TaskList.astro";
 ---
 
-<!doctype html>
-<html lang="en">
-	<head>
-		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
-	</head>
-	<body>
-		<Header />
-		<main>
-			<h1>🧑‍🚀 Hello, Astronaut!</h1>
-			<p>
-				Welcome to the official <a href="https://astro.build/">Astro</a> blog starter template. This
-				template serves as a lightweight, minimally-styled starting point for anyone looking to
-				build a personal website, blog, or portfolio with Astro.
+<BaseLayout title="DevTask — Dashboard">
+	<Sidebar />
+
+	<main class="dashboard">
+		<header class="page-header">
+		<div>
+			<p class="eyebrow" id="workspace-date"></p>
+			<script>
+				document.getElementById('workspace-date').textContent =
+					new Date().toLocaleDateString('en-US', {
+						weekday: 'long'
+					}).toUpperCase() + ', YOUR WORKSPACE';
+			</script>
+			
+			<h1>Overview<span>.</span></h1>
+			<p class="page-description">
+			Here's what's happening with your tasks today.
 			</p>
-			<p>
-				This template comes with a few integrations already configured in your{' '}
-				<code>astro.config.mjs</code> file. You can customize your setup with{' '}
-				<a href="https://astro.build/integrations">Astro Integrations</a> to add tools like
-				Tailwind, React, or Vue to your project.
-			</p>
-			<p>Here are a few ideas on how to get started with the template:</p>
-			<ul>
-				<li>
-					Edit this page in <code>src/pages/index.astro</code>
-				</li>
-				<li>
-					Edit the site header items in <code>src/components/Header.astro</code>
-				</li>
-				<li>
-					Add your name to the footer in <code>src/components/Footer.astro</code>
-				</li>
-				<li>
-					Check out the included blog posts in <code>src/content/blog/</code>
-				</li>
-				<li>
-					Customize the blog post page layout in <code>src/layouts/BlogPost.astro</code>
-				</li>
-			</ul>
-			<p>
-				Have fun! If you get stuck, remember to{' '}
-				<a href="https://docs.astro.build/">read the docs</a> or{' '}
-				<a href="https://astro.build/chat">join us on Discord</a> to ask questions.
-			</p>
-			<p>
-				Looking for a blog template with a bit more personality? Check out{' '}
-				<a href="https://github.com/Charca/astro-blog-template">astro-blog-template</a> by{' '}
-				<a href="https://twitter.com/Charca">Maxi Ferreira</a>.
-			</p>
-		</main>
-		<Footer />
-	</body>
-</html>
+		</div>
+
+		<button
+			class="create-button"
+			id="create-task-button"
+			type="button"
+		>
+			<span>+</span> New task
+		</button>
+		</header>
+
+		<section class="stats-grid" aria-label="Task statistics">
+		<StatCard
+			label="Total Tasks"
+			value="24"
+			description="Tasks in your workspace"
+			icon="◈"
+			accent="purple"
+		/>
+
+		<StatCard
+			label="Completed"
+			value="16"
+			description="Tasks finished so far"
+			icon="✓"
+			accent="green"
+		/>
+
+		<StatCard
+			label="In Progress"
+			value="5"
+			description="Tasks currently active"
+			icon="↗"
+			accent="blue"
+		/>
+
+		<StatCard
+			label="Overdue"
+			value="3"
+			description="Tasks past their deadline"
+			icon="!"
+			accent="orange"
+		/>
+		</section>
+
+		<section class="activity-grid">
+			<WeeklyProgress />
+
+			<section class="placeholder-panel">
+				<div class="panel-heading">
+				<div>
+					<h2>Today's focus</h2>
+					<p>Keep your priorities in sight.</p>
+				</div>
+				</div>
+
+				<div class="empty-chart">
+				<div class="chart-icon">✦</div>
+				<p>Stay focused on what matters.</p>
+				<span>Your priority tasks will appear here.</span>
+				</div>
+			</section>
+		</section>
+		<TaskList />
+		<div class="modal-overlay" id="task-modal" hidden>
+			<section
+				class="task-modal"
+				role="dialog"
+				aria-modal="true"
+				aria-labelledby="modal-title"
+			>
+				<header class="modal-header">
+				<div>
+					<h2 id="modal-title">Create a new task</h2>
+					<p>Organize your next piece of work.</p>
+				</div>
+
+				<button
+					class="modal-close"
+					id="close-task-modal"
+					type="button"
+					aria-label="Close dialog"
+				>×</button>
+				</header>
+
+				<form id="task-form">
+				<label for="task-title-input">Task name</label>
+				<input
+					id="task-title-input"
+					name="title"
+					type="text"
+					placeholder="e.g. Build dashboard"
+					maxlength="100"
+					required
+				/>
+
+				<label for="task-project-input">Project</label>
+				<select id="task-project-input" name="project">
+					<option value="">Tanpa proyek</option>
+				</select>
+
+				<div class="modal-fields">
+					<div>
+					<label for="task-priority-input">Priority</label>
+					<select id="task-priority-input" name="priority">
+						<option value="Low">Low</option>
+						<option value="Medium" selected>Medium</option>
+						<option value="High">High</option>
+					</select>
+					</div>
+
+					<div>
+					<label for="task-due-input">Due date</label>
+					<input
+						id="task-due-input"
+						name="due"
+						type="date"
+					/>
+					</div>
+				</div>
+
+				<div class="modal-actions">
+					<button
+					class="cancel-button"
+					id="cancel-task-modal"
+					type="button"
+					>Cancel</button>
+
+					<button class="create-button" type="submit">
+					Create task
+					</button>
+				</div>
+				</form>
+			</section>
+		</div>
+	</main>
+</BaseLayout>
+
+<style is:global>
+	.dashboard {
+		min-height: 100vh;
+		margin-left: 250px;
+		padding: 42px 40px;
+	}
+
+	.page-header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 24px;
+		margin-bottom: 35px;
+	}
+
+	.eyebrow {
+		margin: 0 0 10px;
+		color: #9990ed;
+		font-size: 10px;
+		font-weight: 700;
+		letter-spacing: 1.6px;
+	}
+
+	h1 {
+		margin: 0;
+		color: #f0f0f7;
+		font-family: "Plus Jakarta Sans", sans-serif;
+		font-size: clamp(30px, 4vw, 40px);
+		font-weight: 800;
+		letter-spacing: -2px;
+	}
+
+	h1 span {
+		color: #9b8dff;
+	}
+
+	.page-description {
+		margin: 12px 0 0;
+		color: #9299aa;
+		font-size: 13px;
+		line-height: 1.7;
+	}
+
+	.create-button {
+		display: inline-flex;
+		min-height: 42px;
+		align-items: center;
+		justify-content: center;
+		gap: 9px;
+		padding: 0 17px;
+		border: 0;
+		border-radius: 9px;
+		color: #fff;
+		background: #7969e9;
+		font-size: 12px;
+		font-weight: 600;
+		white-space: nowrap;
+		transition: background 0.2s;
+	}
+
+	.create-button:hover {
+		background: #8b7cff;
+	}
+
+	.create-button span {
+		font-size: 19px;
+		line-height: 1;
+	}
+
+	.stats-grid {
+		display: grid;
+		grid-template-columns: repeat(4, minmax(0, 1fr));
+		gap: 17px;
+	}
+
+	.placeholder-panel {
+		margin-top: 25px;
+		padding: 24px;
+		border: 1px solid #292e3d;
+		border-radius: 13px;
+		background: #131620;
+	}
+
+	.panel-heading {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 16px;
+	}
+
+	.panel-heading h2 {
+		margin: 0;
+		color: #e8eaf0;
+		font-size: 15px;
+		font-weight: 700;
+	}
+
+	.panel-heading p {
+		margin: 7px 0 0;
+		color: #858c9e;
+		font-size: 12px;
+	}
+
+	.period-label {
+		padding: 8px 11px;
+		border: 1px solid #292e3d;
+		border-radius: 7px;
+		color: #aeb4c3;
+		font-size: 11px;
+		white-space: nowrap;
+	}
+
+	.empty-chart {
+		display: flex;
+		min-height: 190px;
+		align-items: center;
+		justify-content: center;
+		flex-direction: column;
+		padding: 24px 10px;
+		text-align: center;
+	}
+
+	.chart-icon {
+		display: grid;
+		width: 42px;
+		height: 42px;
+		place-items: center;
+		border: 1px solid #38334f;
+		border-radius: 12px;
+		color: #b9adff;
+		background: #26213d;
+		font-size: 21px;
+	}
+
+	.empty-chart p {
+		margin: 16px 0 7px;
+		color: #c5c9d4;
+		font-size: 13px;
+	}
+
+	.empty-chart > span {
+		color: #858c9e;
+		font-size: 11px;
+		line-height: 1.7;
+	}
+
+	.activity-grid {
+		display: grid;
+		grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+		align-items: stretch;
+		gap: 20px;
+		margin-top: 25px;
+	}
+
+		@media (max-width: 1000px) {
+		.activity-grid {
+			grid-template-columns: 1fr;
+		}
+	}
+
+	.modal-overlay[hidden] {
+		display: none;
+	}
+
+	.modal-overlay {
+		position: fixed;
+		inset: 0;
+		z-index: 100;
+		display: grid;
+		place-items: center;
+		overflow-y: auto;
+		padding: 20px;
+		background: rgb(0 0 0 / 70%);
+		backdrop-filter: blur(5px);
+	}
+
+	.task-modal {
+		width: min(100%, 480px);
+		padding: 26px;
+		border: 1px solid #33384a;
+		border-radius: 16px;
+		background: #181c28;
+		box-shadow: 0 25px 80px rgb(0 0 0 / 35%);
+	}
+
+	.modal-header {
+		display: flex;
+		align-items: flex-start;
+		justify-content: space-between;
+		gap: 16px;
+		margin-bottom: 25px;
+	}
+
+	.modal-header h2 {
+		margin: 0;
+		color: #f0f0f7;
+		font-size: 19px;
+	}
+
+	.modal-header p {
+		margin: 8px 0 0;
+		color: #9299aa;
+		font-size: 12px;
+	}
+
+	.modal-close {
+		border: 0;
+		color: #aab0bf;
+		background: transparent;
+		font-size: 25px;
+	}
+
+	#task-form {
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+	}
+
+	#task-form label {
+		margin-top: 8px;
+		color: #c4c8d4;
+		font-size: 12px;
+		font-weight: 600;
+	}
+
+	#task-form input,
+	#task-form select {
+		width: 100%;
+		min-width: 0;
+		min-height: 43px;
+		padding: 10px 12px;
+		border: 1px solid #33384a;
+		border-radius: 8px;
+		outline: none;
+		color: #e8eaf0;
+		background: #11131c;
+		font-size: 12px;
+	}
+
+	#task-form input:focus,
+	#task-form select:focus {
+		
+	}
+
+	#task-form input::placeholder {
+		color: #686f82;
+	}
+
+	#task-form input[type="date"] {
+		color-scheme: dark;
+	}
+
+	.modal-fields {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 14px;
+	}
+
+	.modal-fields > div {
+		display: flex;
+		min-width: 0;
+		flex-direction: column;
+		gap: 10px;
+	}
+
+	.modal-actions {
+		display: flex;
+		justify-content: flex-end;
+		gap: 10px;
+		margin-top: 22px;
+	}
+
+	.cancel-button {
+		padding: 0 15px;
+		border: 1px solid #33384a;
+		border-radius: 9px;
+		color: #c4c8d4;
+		background: transparent;
+		font-size: 12px;
+	}
+
+	@media (max-width: 420px) {
+		.task-modal {
+			padding: 20px;
+	}
+
+	.modal-fields {
+		grid-template-columns: 1fr;
+		gap: 8px;
+	}
+	}
+
+	@media (max-width: 1150px) {
+		.dashboard {
+		padding: 35px 25px;
+		}
+
+		.stats-grid {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+	}
+
+	@media (max-width: 760px) {
+		.dashboard {
+		margin-left: 0;
+		padding: 30px 20px;
+		}
+
+		.page-header {
+		align-items: flex-start;
+		}
+	}
+
+	@media (max-width: 480px) {
+		.page-header {
+		flex-direction: column;
+		}
+
+		.stats-grid {
+		grid-template-columns: 1fr;
+		}
+
+		.placeholder-panel {
+		padding: 18px;
+		}
+	}
+</style>
+
+<script src="../scripts/dashboard.ts"></script>

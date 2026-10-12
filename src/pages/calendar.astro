@@ -1,0 +1,774 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Sidebar from "../components/Sidebar.astro";
+---
+
+<BaseLayout title="DevTask — Calendar">
+    <Sidebar />
+
+    <main class="calendar-page">
+        <header class="page-header">
+        <div>
+            <p class="eyebrow">PLAN YOUR WORK</p>
+            <h1>Calendar<span>.</span></h1>
+            <p class="subtitle">Keep track of your deadlines and upcoming tasks.</p>
+        </div>
+        <a class="add-button" href="/tasks">+ Add Task</a>
+        </header>
+
+        <section class="calendar-layout">
+        <div class="calendar-panel">
+            <div class="calendar-toolbar">
+            <div>
+                <h2 id="month-title">Loading...</h2>
+                <p id="month-subtitle">Your schedule at a glance</p>
+            </div>
+            <div class="month-controls">
+                <button id="prev-month" aria-label="Previous month">‹</button>
+                <button id="today-button">Today</button>
+                <button id="next-month" aria-label="Next month">›</button>
+            </div>
+            </div>
+
+            <div class="weekdays">
+            <span>Mon</span>
+            <span>Tue</span>
+            <span>Wed</span>
+            <span>Thu</span>
+            <span>Fri</span>
+            <span>Sat</span>
+            <span>Sun</span>
+            </div>
+
+            <div id="calendar-grid" class="calendar-grid">
+            <p class="loading">Loading calendar...</p>
+            </div>
+
+            <div class="calendar-legend">
+            <span><i class="legend-dot"></i> Has tasks</span>
+            <span><i class="legend-dot completed-dot"></i> All completed</span>
+            </div>
+        </div>
+
+        <aside class="agenda-panel">
+            <div class="agenda-heading">
+            <div>
+                <p class="eyebrow">YOUR SCHEDULE</p>
+                <h2 id="selected-date-title">Select a date</h2>
+            </div>
+            <span id="agenda-count" class="count-badge">0</span>
+            </div>
+
+            <div id="agenda-list" class="agenda-list">
+            <p class="empty-state">Loading tasks...</p>
+            </div>
+
+            <a class="view-tasks" href="/tasks">View all tasks <span>→</span></a>
+        </aside>
+        </section>
+    </main>
+</BaseLayout>
+
+<script>
+    import { supabase } from "../lib/supabase.js";
+
+    type CalendarTask = {
+        id: string;
+        title: string;
+        project: string | null;
+        priority: "Low" | "Medium" | "High";
+        due_date: string | null;
+        completed: boolean;
+    };
+
+    const grid = document.querySelector<HTMLDivElement>("#calendar-grid")!;
+    const monthTitle = document.querySelector<HTMLHeadingElement>("#month-title")!;
+    const monthSubtitle = document.querySelector<HTMLParagraphElement>("#month-subtitle")!;
+    const selectedDateTitle = document.querySelector<HTMLHeadingElement>("#selected-date-title")!;
+    const agendaList = document.querySelector<HTMLDivElement>("#agenda-list")!;
+    const agendaCount = document.querySelector<HTMLSpanElement>("#agenda-count")!;
+
+    let tasks: CalendarTask[] = [];
+    let displayedMonth = new Date();
+    let selectedDate = toDateKey(new Date());
+
+    function toDateKey(date: Date): string {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const day = String(date.getDate()).padStart(2, "0");
+        return `${year}-${month}-${day}`;
+    }
+
+    function formatDate(dateKey: string): string {
+        const [year, month, day] = dateKey.split("-").map(Number);
+        return new Date(year, month - 1, day).toLocaleDateString("en-US", {
+        weekday: "long",
+        month: "long",
+        day: "numeric",
+        year: "numeric",
+        });
+    }
+
+    function escapeHtml(value: string | null | undefined): string {
+        return (value ?? "").replace(/[&<>"']/g, (char) => {
+        const entities: Record<string, string> = {
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#39;",
+        };
+        return entities[char];
+        });
+    }
+
+    function getTasksForDate(dateKey: string): CalendarTask[] {
+        return tasks.filter((task) => task.due_date?.slice(0, 10) === dateKey);
+    }
+
+    function renderCalendar(): void {
+        const year = displayedMonth.getFullYear();
+        const month = displayedMonth.getMonth();
+
+        monthTitle.textContent = displayedMonth.toLocaleDateString("en-US", {
+        month: "long",
+        year: "numeric",
+        });
+
+        const firstDay = new Date(year, month, 1);
+        const lastDay = new Date(year, month + 1, 0);
+        const startOffset = (firstDay.getDay() + 6) % 7;
+        const totalCells = Math.ceil((startOffset + lastDay.getDate()) / 7) * 7;
+        const todayKey = toDateKey(new Date());
+
+        monthSubtitle.textContent =
+        `${tasks.filter((task) => task.due_date?.slice(0, 7) === `${year}-${String(month + 1).padStart(2, "0")}`).length} tasks due this month`;
+
+        grid.innerHTML = "";
+
+        for (let index = 0; index < totalCells; index++) {
+        const dayNumber = index - startOffset + 1;
+        const date = new Date(year, month, dayNumber);
+        const dateKey = toDateKey(date);
+        const inCurrentMonth = dayNumber >= 1 && dayNumber <= lastDay.getDate();
+        const dayTasks = inCurrentMonth ? getTasksForDate(dateKey) : [];
+        const allCompleted = dayTasks.length > 0 && dayTasks.every((task) => task.completed);
+
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "day-cell";
+
+        if (!inCurrentMonth) button.classList.add("outside-month");
+        if (dateKey === todayKey && inCurrentMonth) button.classList.add("today");
+        if (dateKey === selectedDate && inCurrentMonth) button.classList.add("selected");
+
+        button.setAttribute("aria-label", `${dateKey}, ${dayTasks.length} tasks`);
+        button.setAttribute("aria-pressed", String(dateKey === selectedDate));
+
+        button.innerHTML = `
+            <span class="day-number">${date.getDate()}</span>
+            ${
+            dayTasks.length
+                ? `<span class="day-indicator ${allCompleted ? "all-completed" : ""}">
+                    <i></i>${dayTasks.length > 1 ? `<b>${dayTasks.length}</b>` : ""}
+                </span>`
+                : ""
+            }
+        `;
+
+        button.addEventListener("click", () => {
+            selectedDate = dateKey;
+            renderCalendar();
+            renderAgenda();
+        });
+
+        grid.appendChild(button);
+        }
+    }
+
+    function renderAgenda(): void {
+        selectedDateTitle.textContent = formatDate(selectedDate);
+
+        const dateTasks = getTasksForDate(selectedDate);
+        agendaCount.textContent = String(dateTasks.length);
+
+        if (dateTasks.length === 0) {
+        agendaList.innerHTML = `
+            <div class="empty-state">
+            <span class="empty-icon">◷</span>
+            <h3>No tasks scheduled</h3>
+            <p>There are no tasks due on this date.</p>
+            <a href="/tasks">Create a task →</a>
+            </div>
+        `;
+        return;
+        }
+
+        agendaList.innerHTML = dateTasks
+        .map((task) => {
+            const priority = ["Low", "Medium", "High"].includes(task.priority)
+            ? task.priority
+            : "Medium";
+
+            return `
+            <article class="agenda-task ${task.completed ? "task-completed" : ""}">
+                <span class="task-status ${task.completed ? "is-completed" : ""}">
+                ${task.completed ? "✓" : ""}
+                </span>
+                <div class="agenda-task-content">
+                <h3>${escapeHtml(task.title)}</h3>
+                <p>${escapeHtml(task.project || "No project assigned")}</p>
+                <div class="task-tags">
+                    <span class="priority-tag priority-${priority.toLowerCase()}">${priority}</span>
+                    <span class="status-tag">${task.completed ? "Completed" : "Pending"}</span>
+                </div>
+                </div>
+            </article>
+            `;
+        })
+        .join("");
+    }
+
+    async function loadTasks(): Promise<void> {
+        const { data: { session } } = await supabase.auth.getSession();
+
+        if (!session) {
+        window.location.href = "/login";
+        return;
+        }
+
+        const { data, error } = await supabase
+        .from("tasks")
+        .select("id, title, project, priority, due_date, completed")
+        .order("due_date", { ascending: true });
+
+        if (error) {
+        console.error("Failed to load calendar tasks:", error);
+        grid.innerHTML = `<p class="error-state">Failed to load tasks. Please refresh the page.</p>`;
+        agendaList.innerHTML = `<p class="error-state">Could not load your schedule.</p>`;
+        return;
+        }
+
+        tasks = (data ?? []) as CalendarTask[];
+        renderCalendar();
+        renderAgenda();
+    }
+
+    document.querySelector("#prev-month")?.addEventListener("click", () => {
+        displayedMonth = new Date(
+        displayedMonth.getFullYear(),
+        displayedMonth.getMonth() - 1,
+        1,
+        );
+        renderCalendar();
+    });
+
+    document.querySelector("#next-month")?.addEventListener("click", () => {
+        displayedMonth = new Date(
+        displayedMonth.getFullYear(),
+        displayedMonth.getMonth() + 1,
+        1,
+        );
+        renderCalendar();
+    });
+
+    document.querySelector("#today-button")?.addEventListener("click", () => {
+        displayedMonth = new Date();
+        selectedDate = toDateKey(new Date());
+        renderCalendar();
+        renderAgenda();
+    });
+
+    supabase.auth.onAuthStateChange((event) => {
+        if (event === "SIGNED_OUT") {
+        window.location.href = "/login";
+        }
+    });
+
+    loadTasks();
+</script>
+
+<style is:global>
+    :root {
+        --cal-bg: #101110;
+        --cal-panel: #171917;
+        --cal-border: #2b2e2b;
+        --cal-text: #f0f1ed;
+        --cal-muted: #92978f;
+        --cal-accent: #b8f36b;
+    }
+
+    .calendar-page {
+        margin-left: 250px;
+        width: calc(100% - 250px);
+        min-width: 0;
+        box-sizing: border-box;
+        min-height: 100vh;
+        padding: 42px 40px;
+        background: var(--cal-bg);
+        color: var(--cal-text);
+        font-family: "Plus Jakarta Sans", sans-serif;
+    }
+
+    .page-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        margin-bottom: 34px;
+    }
+
+    .eyebrow {
+        margin: 0 0 10px;
+        color: var(--cal-accent);
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 1.6px;
+    }
+
+    .page-header h1 {
+        margin: 0;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        font-size: clamp(30px, 4vw, 40px);
+        font-weight: 800;
+        letter-spacing: -2px;
+    }
+
+    .page-header h1 span {
+        color: var(--cal-accent);
+    }
+
+    .subtitle {
+        margin: 10px 0 0;
+        color: var(--cal-muted);
+        font-size: 13px;
+    }
+
+    .add-button,
+    .view-tasks {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        border: 1px solid var(--cal-accent);
+        border-radius: 9px;
+        padding: 12px 17px;
+        background: var(--cal-accent);
+        color: #14180e;
+        font-size: 12px;
+        font-weight: 800;
+        text-decoration: none;
+        white-space: nowrap;
+    }
+
+    .calendar-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1.7fr) minmax(270px, 0.85fr);
+        align-items: start;
+        gap: 22px;
+    }
+
+    .calendar-panel,
+    .agenda-panel {
+        min-width: 0;
+        overflow: hidden;
+        border: 1px solid var(--cal-border);
+        border-radius: 15px;
+        background: var(--cal-panel);
+    }
+
+    .calendar-panel {
+        padding: clamp(16px, 2.5vw, 28px);
+    }
+
+    .calendar-toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+        margin-bottom: 27px;
+    }
+
+    .calendar-toolbar h2,
+    .agenda-heading h2 {
+        margin: 0;
+        font-size: 19px;
+        letter-spacing: -0.5px;
+    }
+
+    #month-subtitle {
+        margin: 7px 0 0;
+        color: var(--cal-muted);
+        font-size: 11px;
+    }
+
+    .month-controls {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+    }
+
+    .month-controls button {
+        min-width: 34px;
+        height: 34px;
+        border: 1px solid var(--cal-border);
+        border-radius: 8px;
+        background: #202320;
+        color: var(--cal-text);
+        cursor: pointer;
+    }
+
+    .month-controls button:hover {
+        border-color: var(--cal-accent);
+    }
+
+    .month-controls #today-button {
+        padding: 0 11px;
+        font-size: 11px;
+    }
+
+    .weekdays,
+    .calendar-grid {
+        display: grid;
+        grid-template-columns: repeat(7, minmax(0, 1fr));
+    }
+
+    .weekdays {
+        margin-bottom: 9px;
+    }
+
+    .weekdays span {
+        padding: 10px 0;
+        color: var(--cal-muted);
+        font-size: 10px;
+        font-weight: 700;
+        text-align: center;
+    }
+
+    .calendar-grid {
+        gap: 5px;
+    }
+
+    .day-cell {
+        position: relative;
+        display: flex;
+        min-width: 0;
+        min-height: clamp(55px, 7.5vw, 83px);
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+        border: 1px solid transparent;
+        border-radius: 9px;
+        padding: 10px 2px 6px;
+        background: #1d201d;
+        color: var(--cal-text);
+        cursor: pointer;
+    }
+
+    .day-cell:hover {
+        border-color: #59664a;
+    }
+
+    .day-cell.outside-month {
+        background: transparent;
+        color: #555a53;
+    }
+
+    .day-cell.today .day-number {
+        display: grid;
+        width: 25px;
+        height: 25px;
+        place-items: center;
+        border-radius: 50%;
+        background: #343f2a;
+        color: var(--cal-accent);
+        font-weight: 800;
+    }
+
+    .day-cell.selected {
+        border-color: var(--cal-accent);
+        background: #252d20;
+    }
+
+    .day-number {
+        font-size: 12px;
+    }
+
+    .day-indicator {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        color: var(--cal-accent);
+        font-size: 10px;
+    }
+
+    .day-indicator i,
+    .legend-dot {
+        display: inline-block;
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--cal-accent);
+    }
+
+    .day-indicator b {
+        font-size: 10px;
+        font-weight: 700;
+    }
+
+    .day-indicator.all-completed i,
+    .completed-dot {
+        background: #7b9dff;
+    }
+
+    .calendar-legend {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        margin-top: 24px;
+        color: var(--cal-muted);
+        font-size: 10px;
+    }
+
+    .calendar-legend span {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+    }
+
+    .agenda-panel {
+        padding: 22px;
+    }
+
+    .agenda-heading {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        padding-bottom: 21px;
+        border-bottom: 1px solid var(--cal-border);
+    }
+
+    .agenda-heading h2 {
+        font-size: 16px;
+    }
+
+    .count-badge {
+        display: grid;
+        width: 30px;
+        height: 30px;
+        place-items: center;
+        border: 1px solid #39442f;
+        border-radius: 9px;
+        background: #252d20;
+        color: var(--cal-accent);
+        font-size: 12px;
+        font-weight: 800;
+    }
+
+    .agenda-list {
+        display: grid;
+        gap: 11px;
+        padding: 17px 0;
+    }
+
+    .agenda-task {
+        display: flex;
+        align-items: flex-start;
+        gap: 11px;
+        border: 1px solid var(--cal-border);
+        border-radius: 10px;
+        padding: 13px;
+        background: #1d201d;
+    }
+
+    .task-status {
+        display: grid;
+        width: 17px;
+        height: 17px;
+        flex: 0 0 17px;
+        place-items: center;
+        margin-top: 2px;
+        border: 1px solid #656b61;
+        border-radius: 50%;
+        color: #111;
+        font-size: 10px;
+    }
+
+    .task-status.is-completed {
+        border-color: var(--cal-accent);
+        background: var(--cal-accent);
+    }
+
+    .agenda-task-content {
+        min-width: 0;
+        flex: 1;
+    }
+
+    .agenda-task h3 {
+        margin: 0;
+        overflow-wrap: anywhere;
+        font-size: 12px;
+        line-height: 1.5;
+    }
+
+    .agenda-task-content > p {
+        margin: 5px 0 10px;
+        color: var(--cal-muted);
+        font-size: 10px;
+    }
+
+    .task-completed h3 {
+        color: var(--cal-muted);
+        text-decoration: line-through;
+    }
+
+    .task-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+    .priority-tag,
+    .status-tag {
+        display: inline-block;
+        border-radius: 5px;
+        padding: 4px 7px;
+        font-size: 9px;
+        font-weight: 700;
+    }
+
+    .priority-low {
+        background: #24352b;
+        color: #91d8a8;
+    }
+
+    .priority-medium {
+        background: #393323;
+        color: #e6c878;
+    }
+
+    .priority-high {
+        background: #3d2827;
+        color: #ff9c91;
+    }
+
+    .status-tag {
+        background: #292c29;
+        color: #b8bdb4;
+    }
+
+    .empty-state {
+        padding: 25px 5px;
+        color: var(--cal-muted);
+        text-align: center;
+    }
+
+    .empty-icon {
+        display: block;
+        margin-bottom: 12px;
+        color: var(--cal-accent);
+        font-size: 28px;
+    }
+
+    .empty-state h3 {
+        margin: 0 0 7px;
+        color: var(--cal-text);
+        font-size: 13px;
+    }
+
+    .empty-state p {
+        margin: 0 0 14px;
+        font-size: 11px;
+        line-height: 1.6;
+    }
+
+    .empty-state a {
+        color: var(--cal-accent);
+        font-size: 11px;
+        text-decoration: none;
+    }
+
+    .view-tasks {
+        display: flex;
+        justify-content: space-between;
+        border-color: var(--cal-border);
+        background: transparent;
+        color: var(--cal-text);
+    }
+
+    .view-tasks span {
+        color: var(--cal-accent);
+    }
+
+    .loading,
+    .error-state {
+        grid-column: 1 / -1;
+        padding: 24px;
+        color: var(--cal-muted);
+        font-size: 12px;
+        text-align: center;
+    }
+
+    .error-state {
+        color: #ff9c91;
+    }
+
+    @media (max-width: 1000px) {
+        .calendar-layout {
+            grid-template-columns: minmax(0, 1fr);
+        }
+        .calendar-page {
+            margin-left: 0;
+            width: 100%;
+        }
+    }
+
+    @media (max-width: 600px) {
+        .calendar-page {
+        padding: 28px 14px;
+        }
+
+        .page-header {
+        align-items: flex-start;
+        }
+
+        .subtitle {
+        max-width: 240px;
+        line-height: 1.6;
+        }
+
+        .add-button {
+            padding: 10px;
+            font-size: 10px;
+            transform: translateY(100px);
+        }
+
+        .calendar-panel {
+        padding: 13px 9px;
+        }
+
+        .calendar-toolbar {
+        align-items: flex-start;
+        flex-direction: column;
+        }
+
+        .day-cell {
+        min-height: 57px;
+        gap: 8px;
+        padding-top: 8px;
+        }
+
+        .weekdays span {
+        font-size: 9px;
+        }
+
+        .calendar-grid {
+        gap: 3px;
+        }
+
+        .agenda-panel {
+        padding: 16px;
+        }
+    }
+</style>

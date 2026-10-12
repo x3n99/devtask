@@ -1,0 +1,284 @@
+
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+
+<BaseLayout>
+  <main class="auth-page">
+    <section class="auth-card">
+      <a href="/" class="auth-brand">devtask<span>.</span></a>
+
+      <div class="auth-heading">
+        <h1>Create your account</h1>
+        <p>Start organizing your work with DevTask.</p>
+      </div>
+
+      <form id="register-form" class="auth-form">
+        <label for="register-name">Full name</label>
+        <input
+          id="register-name"
+          name="name"
+          type="text"
+          placeholder="Enter your full name"
+          autocomplete="name"
+          required
+          minlength="2"
+          maxlength="80"
+        />
+
+        <label for="register-email">Email address</label>
+        <input
+          id="register-email"
+          name="email"
+          type="email"
+          placeholder="you@example.com"
+          autocomplete="email"
+          required
+        />
+
+        <label for="register-password">Password</label>
+        <input
+          id="register-password"
+          name="password"
+          type="password"
+          placeholder="At least 8 characters"
+          autocomplete="new-password"
+          minlength="8"
+          required
+        />
+
+        <label for="register-confirm-password">Confirm password</label>
+        <input
+          id="register-confirm-password"
+          name="confirmPassword"
+          type="password"
+          placeholder="Re-enter your password"
+          autocomplete="new-password"
+          minlength="8"
+          required
+        />
+
+        <p id="register-message" class="auth-message" role="status" aria-live="polite"></p>
+
+        <button type="submit" id="register-submit">
+          Create account
+        </button>
+      </form>
+
+      <p class="auth-switch">
+        Already have an account?
+        <a href="/login">Log in</a>
+      </p>
+    </section>
+  </main>
+</BaseLayout>
+
+<style is:global>
+  .auth-page {
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: 32px 20px;
+    background: #10121a;
+    color: #e0e2eb;
+    font-family: "DM Sans", sans-serif;
+  }
+
+  .auth-card {
+    width: 100%;
+    max-width: 420px;
+    padding: 36px;
+    border: 1px solid #292e3d;
+    border-radius: 18px;
+    background: #171a24;
+  }
+
+  .auth-brand {
+    display: inline-block;
+    margin-bottom: 32px;
+    color: #f0f1f6;
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: -1.5px;
+    text-decoration: none;
+  }
+
+  .auth-brand span {
+    color: #8b7cff;
+  }
+
+  .auth-heading h1 {
+    margin: 0 0 8px;
+    font-size: 25px;
+    letter-spacing: -0.8px;
+  }
+
+  .auth-heading p,
+  .auth-switch {
+    color: #858c9e;
+    font-size: 13px;
+    line-height: 1.7;
+  }
+
+  .auth-form {
+    display: flex;
+    flex-direction: column;
+    margin-top: 26px;
+  }
+
+  .auth-form label {
+    margin: 0 0 8px;
+    color: #c9cdd9;
+    font-size: 12px;
+  }
+
+  .auth-form input {
+    width: 100%;
+    box-sizing: border-box;
+    margin-bottom: 18px;
+    padding: 12px 14px;
+    border: 1px solid #303547;
+    border-radius: 8px;
+    outline: none;
+    background: #11141d;
+    color: #e0e2eb;
+    font: inherit;
+    font-size: 13px;
+  }
+
+  .auth-form input:focus {
+    border-color: #8b7cff;
+  }
+
+  .auth-form input::placeholder {
+    color: #626a7e;
+  }
+
+  .auth-form button {
+    padding: 13px;
+    border: 0;
+    border-radius: 8px;
+    background: #8b7cff;
+    color: #fff;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .auth-form button:disabled {
+    opacity: 0.6;
+    cursor: wait;
+  }
+
+  .auth-message {
+    min-height: 18px;
+    margin: 0 0 14px;
+    color: #ff929b;
+    font-size: 12px;
+    line-height: 1.6;
+  }
+
+  .auth-switch {
+    margin: 24px 0 0;
+    text-align: center;
+  }
+
+  .auth-switch a {
+    color: #a99cff;
+    text-decoration: none;
+  }
+
+  .auth-switch a:hover {
+    text-decoration: underline;
+  }
+
+  @media (max-width: 480px) {
+    .auth-card {
+      padding: 26px 22px;
+    }
+  }
+</style>
+
+<script>
+  import { supabase } from "../lib/supabase.js";
+
+  const form = document.querySelector<HTMLFormElement>("#register-form");
+  const nameInput = document.querySelector<HTMLInputElement>("#register-name");
+  const emailInput = document.querySelector<HTMLInputElement>("#register-email");
+  const passwordInput = document.querySelector<HTMLInputElement>("#register-password");
+  const confirmInput = document.querySelector<HTMLInputElement>("#register-confirm-password");
+  const message = document.querySelector<HTMLParagraphElement>("#register-message");
+  const submitButton = document.querySelector<HTMLButtonElement>("#register-submit");
+
+  form?.addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    if (
+      !nameInput ||
+      !emailInput ||
+      !passwordInput ||
+      !confirmInput ||
+      !message ||
+      !submitButton
+    ) {
+      return;
+    }
+
+    message.textContent = "";
+
+    const name = nameInput.value.trim();
+    const email = emailInput.value.trim();
+    const password = passwordInput.value;
+    const confirmPassword = confirmInput.value;
+
+    if (name.length < 2) {
+      message.textContent = "Please enter your full name.";
+      return;
+    }
+
+    if (password.length < 8) {
+      message.textContent = "Password must be at least 8 characters.";
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      message.textContent = "Passwords do not match.";
+      return;
+    }
+
+    submitButton.disabled = true;
+    submitButton.textContent = "Creating account...";
+
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            full_name: name,
+          },
+        },
+      });
+
+      if (error) throw error;
+
+      if (data.session) {
+        window.location.assign("/");
+        return;
+      }
+
+      message.style.color = "#82c6ff";
+      message.textContent =
+        "Account created. Check your email to confirm your account before logging in.";
+    } catch (error) {
+      message.textContent =
+        error instanceof Error
+          ? error.message
+          : "Unable to create your account. Please try again.";
+    } finally {
+      submitButton.disabled = false;
+      submitButton.textContent = "Create account";
+    }
+  });
+</script>

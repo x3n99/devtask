@@ -1,0 +1,102 @@
+---
+    const {
+    label,
+    value,
+    description,
+    icon = "◈",
+    accent = "purple",
+    } = Astro.props;
+---
+
+<article class={`stat-card ${accent}`}>
+    <div class="card-top">
+        <span class="card-label">{label}</span>
+        <span class="card-icon" aria-hidden="true">{icon}</span>
+    </div>
+
+    <div
+        class="card-value"
+        data-stat={label === "Total Tasks"
+            ? "total"
+            : label === "Completed"
+                ? "completed"
+                : label === "In Progress"
+                    ? "in-progress"
+                    : label === "Overdue"
+                        ? "overdue"
+                        : undefined}
+        >
+        {value}
+    </div>
+
+    <p class="card-description">{description}</p>
+</article>
+
+<style>
+    .stat-card {
+        min-width: 0;
+        padding: 21px;
+        border: 1px solid #292e3d;
+        border-radius: 13px;
+        background: #181c28;
+    }
+
+    .card-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+    }
+
+    .card-label {
+        color: #a0a6b6;
+        font-size: 12px;
+    }
+
+    .card-icon {
+        display: grid;
+        width: 34px;
+        height: 34px;
+        flex-shrink: 0;
+        place-items: center;
+        border: 1px solid #38334f;
+        border-radius: 9px;
+        color: #b9adff;
+        background: #26213d;
+        font-size: 17px;
+    }
+
+    .card-value {
+        margin-top: 20px;
+        color: #f0f0f7;
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 32px;
+        font-weight: 800;
+        letter-spacing: -1.5px;
+    }
+
+    .card-description {
+        margin: 8px 0 0;
+        color: #858c9e;
+        font-size: 11px;
+        line-height: 1.6;
+    }
+
+    .stat-card.blue .card-icon {
+        border-color: #2c435e;
+        color: #85c5ff;
+        background: #1b2b3e;
+    }
+
+    .stat-card.green .card-icon {
+        border-color: #2b4b42;
+        color: #79dfb0;
+        background: #1c342d;
+    }
+
+    .stat-card.orange .card-icon {
+        border-color: #51402d;
+        color: #ffc47c;
+        background: #362a20;
+    }
+</style>
