@@ -547,12 +547,23 @@ import { supabase } from "../lib/supabase.js";
         }
     });
 
-    // A valid Supabase session is required before loading private task data.
-    const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+    // Verify authentication before displaying the dashboard.
+    const dashboard = document.querySelector<HTMLElement>("#dashboard-content");
+
+    if (dashboard) {
+        dashboard.hidden = true;
+    }
+
+    const { data: sessionData, error: sessionError } =
+        await supabase.auth.getSession();
 
     if (sessionError || !sessionData.session) {
         window.location.replace("/login");
         return;
+    }
+
+    if (dashboard) {
+        dashboard.hidden = false;
     }
 
     const projectsLoaded = await loadProjects();

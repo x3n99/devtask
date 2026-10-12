@@ -9,7 +9,7 @@ import TaskList from "../components/TaskList.astro";
 <BaseLayout title="DevTask — Dashboard">
 	<Sidebar />
 
-	<main class="dashboard">
+	<main class="dashboard" id="dashboard-content" hidden>
 		<header class="page-header">
 		<div>
 			<p class="eyebrow" id="workspace-date"></p>
@@ -163,6 +163,11 @@ import TaskList from "../components/TaskList.astro";
 </BaseLayout>
 
 <style is:global>
+
+	#dashboard-content[hidden] {
+		display: none !important;
+	}
+	
 	.dashboard {
 		min-height: 100vh;
 		margin-left: 250px;
