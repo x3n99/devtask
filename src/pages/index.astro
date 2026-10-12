@@ -38,7 +38,7 @@ import TaskList from "../components/TaskList.astro";
 		<section class="stats-grid" aria-label="Task statistics">
 		<StatCard
 			label="Total Tasks"
-			value="24"
+			value=""
 			description="Tasks in your workspace"
 			icon="◈"
 			accent="purple"
@@ -46,7 +46,7 @@ import TaskList from "../components/TaskList.astro";
 
 		<StatCard
 			label="Completed"
-			value="16"
+			value=""
 			description="Tasks finished so far"
 			icon="✓"
 			accent="green"
@@ -54,7 +54,7 @@ import TaskList from "../components/TaskList.astro";
 
 		<StatCard
 			label="In Progress"
-			value="5"
+			value=""
 			description="Tasks currently active"
 			icon="↗"
 			accent="blue"
@@ -62,7 +62,7 @@ import TaskList from "../components/TaskList.astro";
 
 		<StatCard
 			label="Overdue"
-			value="3"
+			value=""
 			description="Tasks past their deadline"
 			icon="!"
 			accent="orange"
@@ -167,7 +167,7 @@ import TaskList from "../components/TaskList.astro";
 	#dashboard-content[hidden] {
 		display: none !important;
 	}
-	
+
 	.dashboard {
 		min-height: 100vh;
 		margin-left: 250px;
