@@ -8,6 +8,8 @@ import { supabase } from "../lib/supabase.js";
         priority: "Low" | "Medium" | "High";
         dueDate: string;
         completed: boolean;
+        createdAt: string;
+        completedAt: string | null;
     };
 
     type Project = {
@@ -220,6 +222,114 @@ import { supabase } from "../lib/supabase.js";
         });
     }
 
+    function renderWeeklyActivity() {
+        const chart = document.querySelector<HTMLElement>("#weekly-chart");
+        const status = document.querySelector<HTMLElement>("#weekly-status");
+        const period = document.querySelector<HTMLElement>("#weekly-period");
+
+        if (!chart) return;
+
+        const now = new Date();
+        const start = new Date(now);
+        start.setHours(0, 0, 0, 0);
+        start.setDate(start.getDate() - 6);
+
+        const end = new Date(now);
+        end.setHours(23, 59, 59, 999);
+
+        if (period) {
+            period.textContent = `${start.toLocaleDateString("en-US", {
+                month: "short",
+                day: "numeric",
+            })} – ${now.toLocaleDateString("en-US", {
+                month: "short",
+                day: "numeric",
+            })}`;
+        }
+
+        const { createdCounts, completedCounts } = tasks.reduce(
+            (counts, task) => {
+                const row = task as Task & {
+                    createdAt?: string;
+                    completedAt?: string | null;
+                };
+
+                if (row.createdAt) {
+                    const created = new Date(row.createdAt);
+                    if (created >= start && created <= end) {
+                        const day = created.getDay();
+                        counts.createdCounts[day]++;
+                    }
+                }
+
+                if (row.completedAt) {
+                    const completed = new Date(row.completedAt);
+                    if (completed >= start && completed <= end) {
+                        const day = completed.getDay();
+                        counts.completedCounts[day]++;
+                    }
+                }
+
+                return counts;
+            },
+            {
+                createdCounts: Array(7).fill(0) as number[],
+                completedCounts: Array(7).fill(0) as number[],
+            }
+        );
+
+        const maxValue = Math.max(
+            1,
+            ...createdCounts,
+            ...completedCounts
+        );
+
+        chart.querySelectorAll<HTMLElement>(".chart-column").forEach((column) => {
+            const label = column.querySelector<HTMLElement>(".day-label");
+            if (!label) return;
+
+            const date = new Date(start);
+            const offset = (new Date(start).getDay());
+            const columnIndex = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+                .indexOf(column.dataset.day ?? "");
+
+            if (columnIndex < 0) return;
+
+            // Map Monday-first chart columns to JavaScript day indices.
+            const dayIndex = (columnIndex + 1) % 7;
+            const countCreated = createdCounts[dayIndex];
+            const countCompleted = completedCounts[dayIndex];
+
+            const completedBar = column.querySelector<HTMLElement>(
+                '[data-series="completed"]'
+            );
+            const createdBar = column.querySelector<HTMLElement>(
+                '[data-series="created"]'
+            );
+
+            if (completedBar) {
+                completedBar.style.height = `${(countCompleted / maxValue) * 100}%`;
+                completedBar.title = `${countCompleted} completed`;
+            }
+
+            if (createdBar) {
+                createdBar.style.height = `${(countCreated / maxValue) * 100}%`;
+                createdBar.title = `${countCreated} created`;
+            }
+
+            // Display the date for each bar.
+            const dayDate = new Date(start);
+            dayDate.setDate(start.getDate() + ((dayIndex - offset + 7) % 7));
+            label.textContent = dayDate.toLocaleDateString("en-US", {
+                weekday: "short",
+            });
+        });
+
+        if (status) {
+            status.textContent = "Activity is based on recorded task dates.";
+        }
+    }
+
     function renderTasks() {
         taskList.replaceChildren();
 
@@ -274,7 +384,12 @@ import { supabase } from "../lib/supabase.js";
 
             const { error } = await supabase
             .from("tasks")
-            .update({ completed: nextCompleted })
+            .update({
+                completed: nextCompleted,
+                completed_at: nextCompleted
+                    ? new Date().toISOString()
+                    : null,
+            })
             .eq("id", task.id);
 
             checkbox.disabled = false;
@@ -289,6 +404,7 @@ import { supabase } from "../lib/supabase.js";
             renderTasks();
             updateStats();
             renderTodaysFocus();
+            renderWeeklyActivity()
         });
 
         const details = createElement("div", "task-details");
@@ -370,6 +486,7 @@ import { supabase } from "../lib/supabase.js";
             renderTasks();
             updateStats();
             renderTodaysFocus();
+            renderWeeklyActivity();
         });
 
         row.append(main, priority, due, editButton, deleteButton);
@@ -570,6 +687,7 @@ import { supabase } from "../lib/supabase.js";
             renderTasks();
             updateStats();
             renderTodaysFocus();
+            renderWeeklyActivity()
             closeModal();
             return;
             }
@@ -584,7 +702,7 @@ import { supabase } from "../lib/supabase.js";
                 due_date: dueDate || null,
                 completed: false,
             })
-            .select("id, title, project, project_id, priority, due_date, completed")
+            .select("id, title, project, project_id, priority, due_date, completed, created_at, completed_at")
             .single();
 
             if (error) {
@@ -606,6 +724,7 @@ import { supabase } from "../lib/supabase.js";
             renderTasks();
             updateStats();
             renderTodaysFocus();
+            renderWeeklyActivity();
             closeModal();
         } catch (error) {
             console.error("DevTask task submission error:", error);
@@ -650,7 +769,7 @@ import { supabase } from "../lib/supabase.js";
 
     const { data, error } = await supabase
         .from("tasks")
-        .select("id, title, project, project_id, priority, due_date, completed")
+        .select("id, title, project, project_id, priority, due_date, completed, created_at, completed_at")
         .order("created_at", { ascending: false });
 
     if (error) {
@@ -666,12 +785,14 @@ import { supabase } from "../lib/supabase.js";
         dueDate: row.due_date || "",
         completed: row.completed,
         projectId: row.project_id ?? null,
+        createdAt: row.created_at,
+        completedAt: row.completed_at,
     }));
 
     renderTasks();
     updateStats();
     renderTodaysFocus();
-
+    renderWeeklyActivity();
     // Keep the dashboard protected when authentication changes.
     supabase.auth.onAuthStateChange((event, session) => {
         if (event === "SIGNED_OUT" || !session) {

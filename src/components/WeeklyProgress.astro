@@ -1,15 +1,13 @@
 ---
 const days = [
-  { day: "Mon", completed: 4, created: 2 },
-  { day: "Tue", completed: 6, created: 3 },
-  { day: "Wed", completed: 3, created: 4 },
-  { day: "Thu", completed: 7, created: 2 },
-  { day: "Fri", completed: 5, created: 3 },
-  { day: "Sat", completed: 2, created: 1 },
-  { day: "Sun", completed: 4, created: 2 },
+  { key: "Mon", label: "Mon" },
+  { key: "Tue", label: "Tue" },
+  { key: "Wed", label: "Wed" },
+  { key: "Thu", label: "Thu" },
+  { key: "Fri", label: "Fri" },
+  { key: "Sat", label: "Sat" },
+  { key: "Sun", label: "Sun" },
 ];
-
-const maxValue = 8;
 ---
 
 <section class="weekly-panel">
@@ -18,8 +16,7 @@ const maxValue = 8;
       <h2>Weekly activity</h2>
       <p>Track your productivity throughout the week.</p>
     </div>
-
-    <span class="period-label">Last 7 days</span>
+    <span class="period-label" id="weekly-period">Last 7 days</span>
   </div>
 
   <div class="chart-legend">
@@ -27,27 +24,28 @@ const maxValue = 8;
     <span><i class="legend-dot created"></i>Created</span>
   </div>
 
-  <div class="chart">
+  <div class="chart" id="weekly-chart" aria-label="Weekly task activity">
     {days.map((item) => (
-      <div class="chart-column">
+      <div class="chart-column" data-day={item.key}>
         <div class="bar-area">
           <div
             class="bar completed-bar"
-            style={`height: ${(item.completed / maxValue) * 100}%`}
-            title={`${item.completed} completed`}
+            data-series="completed"
+            style="height: 0%"
+            title="0 completed"
           ></div>
-
           <div
             class="bar created-bar"
-            style={`height: ${(item.created / maxValue) * 100}%`}
-            title={`${item.created} created`}
+            data-series="created"
+            style="height: 0%"
+            title="0 created"
           ></div>
         </div>
-
-        <span class="day-label">{item.day}</span>
+        <span class="day-label">{item.label}</span>
       </div>
     ))}
   </div>
+  <p class="weekly-status" id="weekly-status" aria-live="polite"></p>
 </section>
 
 <style>
@@ -146,7 +144,8 @@ const maxValue = 8;
 
   .bar {
     width: min(19px, 40%);
-    min-height: 4px;
+    height: 0%;
+    min-height: 0;
     border-radius: 5px 5px 0 0;
     transition: height 0.3s ease;
   }
@@ -163,6 +162,12 @@ const maxValue = 8;
     padding: 10px 0;
     color: #858c9e;
     font-size: 10px;
+  }
+
+  .weekly-status {
+    margin: 12px 0 0;
+    color: #858c9e;
+    font-size: 11px;
   }
 
   @media (max-width: 480px) {
