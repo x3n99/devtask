@@ -71,19 +71,20 @@ import TaskList from "../components/TaskList.astro";
 
 		<section class="activity-grid">
 			<WeeklyProgress />
-
 			<section class="placeholder-panel">
 				<div class="panel-heading">
-				<div>
-					<h2>Today's focus</h2>
-					<p>Keep your priorities in sight.</p>
-				</div>
+					<div>
+						<h2>Today's focus</h2>
+						<p>Keep your priorities in sight.</p>
+					</div>
 				</div>
 
-				<div class="empty-chart">
-				<div class="chart-icon">✦</div>
-				<p>Stay focused on what matters.</p>
-				<span>Your priority tasks will appear here.</span>
+				<div class="focus-task-list" id="todays-focus-list">
+					<div class="empty-chart">
+						<div class="chart-icon">✦</div>
+						<p>Loading your priorities...</p>
+						<span>Your priority tasks will appear here.</span>
+					</div>
 				</div>
 			</section>
 		</section>
@@ -492,6 +493,69 @@ import TaskList from "../components/TaskList.astro";
 		.placeholder-panel {
 		padding: 18px;
 		}
+	}
+
+	.focus-task-list {
+		display: flex;
+		flex-direction: column;
+		gap: 12px;
+		margin-top: 20px;
+	}
+
+	.focus-task-item {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 16px;
+		padding: 14px 16px;
+		border: 1px solid var(--border-color, #e5e7eb);
+		border-radius: 12px;
+		background: var(--card-background, #ffffff);
+	}
+
+	.focus-task-details {
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+		min-width: 0;
+	}
+
+	.focus-task-title {
+		overflow-wrap: anywhere;
+		font-size: 14px;
+		font-weight: 600;
+	}
+
+	.focus-task-due {
+		color: var(--text-muted, #888888);
+		font-size: 12px;
+	}
+
+	.focus-task-priority {
+		flex-shrink: 0;
+		padding: 5px 9px;
+		border-radius: 7px;
+		font-size: 11px;
+		font-weight: 600;
+	}
+
+	.focus-task-priority.high {
+		color: #dc2626;
+		background: #fee2e2;
+	}
+
+	.focus-task-priority.medium {
+		color: #b45309;
+		background: #fef3c7;
+	}
+
+	.focus-task-priority.low {
+		color: #15803d;
+		background: #dcfce7;
+	}
+
+	.focus-empty-title {
+		font-weight: 600;
 	}
 </style>
 

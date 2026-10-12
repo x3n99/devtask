@@ -148,6 +148,78 @@ import { supabase } from "../lib/supabase.js";
         if (stats.overdue) stats.overdue.textContent = String(overdue);
     }
 
+    function renderTodaysFocus() {
+        const container = document.querySelector<HTMLElement>(
+            "#todays-focus-list"
+        );
+
+        if (!container) return;
+
+        container.replaceChildren();
+
+        const priorityOrder: Record<Task["priority"], number> = {
+            High: 0,
+            Medium: 1,
+            Low: 2,
+        };
+
+        const focusTasks = [...tasks]
+            .filter((task) => !task.completed)
+            .sort((a, b) => {
+                const priorityDifference =
+                    priorityOrder[a.priority] - priorityOrder[b.priority];
+
+                if (priorityDifference !== 0) {
+                    return priorityDifference;
+                }
+
+                if (!a.dueDate) return 1;
+                if (!b.dueDate) return -1;
+
+                return a.dueDate.localeCompare(b.dueDate);
+            })
+            .slice(0, 3);
+
+        if (focusTasks.length === 0) {
+            const empty = createElement("div", "empty-chart");
+            empty.append(
+                createElement("div", "chart-icon", "✦"),
+                createElement("p", "focus-empty-title", "You're all caught up!"),
+                createElement(
+                    "span",
+                    undefined,
+                    "Create a task to plan your next priority."
+                )
+            );
+
+            container.append(empty);
+            return;
+        }
+
+        focusTasks.forEach((task) => {
+            const item = createElement("div", "focus-task-item");
+            const details = createElement("div", "focus-task-details");
+
+            details.append(
+                createElement("span", "focus-task-title", task.title),
+                createElement(
+                    "span",
+                    "focus-task-due",
+                    task.dueDate ? formatDate(task.dueDate) : "No due date"
+                )
+            );
+
+            const priority = createElement(
+                "span",
+                `focus-task-priority ${task.priority.toLowerCase()}`,
+                task.priority
+            );
+
+            item.append(details, priority);
+            container.append(item);
+        });
+    }
+
     function renderTasks() {
         taskList.replaceChildren();
 
@@ -216,6 +288,7 @@ import { supabase } from "../lib/supabase.js";
             task.completed = nextCompleted;
             renderTasks();
             updateStats();
+            renderTodaysFocus();
         });
 
         const details = createElement("div", "task-details");
@@ -296,6 +369,7 @@ import { supabase } from "../lib/supabase.js";
             tasks = tasks.filter((item) => item.id !== task.id);
             renderTasks();
             updateStats();
+            renderTodaysFocus();
         });
 
         row.append(main, priority, due, editButton, deleteButton);
@@ -495,6 +569,7 @@ import { supabase } from "../lib/supabase.js";
 
             renderTasks();
             updateStats();
+            renderTodaysFocus();
             closeModal();
             return;
             }
@@ -530,6 +605,7 @@ import { supabase } from "../lib/supabase.js";
             tasks = [newTask, ...tasks];
             renderTasks();
             updateStats();
+            renderTodaysFocus();
             closeModal();
         } catch (error) {
             console.error("DevTask task submission error:", error);
@@ -594,6 +670,7 @@ import { supabase } from "../lib/supabase.js";
 
     renderTasks();
     updateStats();
+    renderTodaysFocus();
 
     // Keep the dashboard protected when authentication changes.
     supabase.auth.onAuthStateChange((event, session) => {
