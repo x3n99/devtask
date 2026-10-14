@@ -3,487 +3,483 @@ const currentPath = Astro.url.pathname;
 ---
 
 <button
-    class="mobile-menu-button"
-    id="mobile-menu-button"
-    type="button"
-    aria-label="Open navigation menu"
-    aria-expanded="false"
-    aria-controls="devtask-sidebar"
+  class="mobile-menu-button"
+  id="mobile-menu-button"
+  type="button"
+  aria-label="Open navigation menu"
+  aria-expanded="false"
+  aria-controls="devtask-sidebar"
 >
-    <span></span>
-    <span></span>
-    <span></span>
+  <span></span>
+  <span></span>
+  <span></span>
 </button>
 
 <div class="sidebar-overlay" id="sidebar-overlay" hidden></div>
 
 <aside class="sidebar" id="devtask-sidebar">
-    <a href="/" class="brand">
-        <span class="brand-icon">D</span>
-        <span class="brand-name">devtask<span>.</span></span>
-    </a>
+  <a href="/" class="brand">
+    <span class="brand-icon">D</span>
+    <span class="brand-name">devtask<span>.</span></span>
+  </a>
 
-    <div class="nav-section">
-        <p class="nav-label">WORKSPACE</p>
+  <div class="nav-section">
+    <p class="nav-label">WORKSPACE</p>
 
-        <nav class="navigation">
-        <a href="/" class={`nav-item ${currentPath === "/" ? "active" : ""}`}>
-            <span class="nav-icon">▦</span>
-            <span>Overview</span>
-        </a>
+    <nav class="navigation">
+      <a href="/" class={`nav-item ${currentPath === "/" ? "active" : ""}`}>
+        <span class="nav-icon">▦</span>
+        <span>Overview</span>
+      </a>
 
-        <a href="/tasks" class="nav-item">
-            <span class="nav-icon">☑</span>
-            <span>My Tasks</span>
-        </a>
+      <a href="/tasks" class="nav-item">
+        <span class="nav-icon">☑</span>
+        <span>My Tasks</span>
+      </a>
 
-        <a href="/projects" class={`nav-item ${currentPath === "/projects" ? "active" : ""}`}>
-            <span class="nav-icon">◫</span>
-            <span>Projects</span>
-        </a>
+      <a
+        href="/projects"
+        class={`nav-item ${currentPath === "/projects" ? "active" : ""}`}
+      >
+        <span class="nav-icon">◫</span>
+        <span>Projects</span>
+      </a>
 
-        <a href="/calendar" class="nav-item">
-            <span class="nav-icon">▦</span>
-            <span>Calendar</span>
-        </a>
-        </nav>
+      <a href="/calendar" class="nav-item">
+        <span class="nav-icon">▦</span>
+        <span>Calendar</span>
+      </a>
+    </nav>
+  </div>
+
+  <a
+    href="/profile"
+    class={`sidebar-bottom ${currentPath === "/profile" ? "profile-active" : ""}`}
+    aria-label="Open profile"
+  >
+    <div class="user-avatar" id="user-avatar">U</div>
+
+    <div class="user-info">
+      <strong id="user-name">Loading...</strong>
     </div>
-
-    <a href="/profile" class={`sidebar-bottom ${currentPath === "/profile" ? "profile-active" : ""}`} aria-label="Open profile">
-        <div class="user-avatar" id="user-avatar">U</div>
-
-        <div class="user-info">
-            <strong id="user-name">Loading...</strong>
-            <span id="user-email">Personal workspace</span>
-        </div>
-    </a>
+  </a>
 </aside>
 
 <style>
-    .sidebar {
-        position: fixed;
-        inset: 0 auto 0 0;
-        z-index: 10;
-        display: flex;
-        flex-direction: column;
-        width: 250px;
-        padding: 28px 18px 18px;
-        background: #11131c;
-        border-right: 1px solid #252937;
-    }
+  .sidebar {
+    position: fixed;
+    inset: 0 auto 0 0;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    width: 250px;
+    padding: 28px 18px 18px;
+    background: #11131c;
+    border-right: 1px solid #252937;
+  }
 
-    .brand {
-        display: flex;
-        align-items: center;
-        gap: 11px;
-        padding: 0 8px;
-    }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    padding: 0 8px;
+  }
 
-    .brand-icon {
-        display: grid;
-        width: 35px;
-        height: 35px;
-        place-items: center;
-        border-radius: 10px;
-        color: white;
-        background: #8b7cff;
-        font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 21px;
-        font-weight: 800;
-    }
+  .brand-icon {
+    display: grid;
+    width: 35px;
+    height: 35px;
+    place-items: center;
+    border-radius: 10px;
+    color: white;
+    background: #8b7cff;
+    font-family: "Plus Jakarta Sans", sans-serif;
+    font-size: 21px;
+    font-weight: 800;
+  }
 
-    .brand-name {
-        color: #f0f0f7;
-        font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 21px;
-        font-weight: 800;
-        letter-spacing: -1px;
-    }
+  .brand-name {
+    color: #f0f0f7;
+    font-family: "Plus Jakarta Sans", sans-serif;
+    font-size: 21px;
+    font-weight: 800;
+    letter-spacing: -1px;
+  }
 
-    .brand-name span {
-        color: #9b8dff;
-    }
+  .brand-name span {
+    color: #9b8dff;
+  }
 
-    .workspace {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        margin-top: 36px;
-        padding: 12px 10px;
-        border: 1px solid #292d3c;
-        border-radius: 10px;
-        background: #181b26;
-    }
+  .workspace {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 36px;
+    padding: 12px 10px;
+    border: 1px solid #292d3c;
+    border-radius: 10px;
+    background: #181b26;
+  }
 
-    .workspace-avatar {
-        display: grid;
-        width: 34px;
-        height: 34px;
-        flex-shrink: 0;
-        place-items: center;
-        border-radius: 8px;
-        color: #c8c0ff;
-        background: #302b50;
-        font-weight: 700;
-    }
+  .workspace-avatar {
+    display: grid;
+    width: 34px;
+    height: 34px;
+    flex-shrink: 0;
+    place-items: center;
+    border-radius: 8px;
+    color: #c8c0ff;
+    background: #302b50;
+    font-weight: 700;
+  }
 
-    .workspace-info,
-    .user-info {
-        display: flex;
-        flex: 1;
-        min-width: 0;
-        flex-direction: column;
-        gap: 4px;
-    }
+  .workspace-info,
+  .user-info {
+    display: flex;
+    flex: 1;
+    min-width: 0;
+    flex-direction: column;
+    gap: 4px;
+  }
 
-    .workspace-info strong,
-    .user-info strong {
-        overflow: hidden;
-        color: #e8eaf0;
-        font-size: 12px;
-        font-weight: 600;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-    }
+  .workspace-info strong,
+  .user-info strong {
+    overflow: hidden;
+    color: #e8eaf0;
+    font-size: 12px;
+    font-weight: 600;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
 
-    .workspace-info > span,
-    .user-info > span {
-        color: #858b9d;
-        font-size: 11px;
-    }
+  .workspace-info > span,
+  .user-info > span {
+    color: #858b9d;
+    font-size: 11px;
+  }
 
-    .workspace-menu {
-        color: #858b9d;
-    }
+  .workspace-menu {
+    color: #858b9d;
+  }
 
-    .nav-section {
-        margin-top: 35px;
-    }
+  .nav-section {
+    margin-top: 35px;
+  }
 
-    .nav-label {
-        margin: 0 10px 12px;
-        color: #777e91;
-        font-size: 10px;
-        font-weight: 700;
-        letter-spacing: 1.4px;
-    }
+  .nav-label {
+    margin: 0 10px 12px;
+    color: #777e91;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.4px;
+  }
 
-    .navigation {
-        display: flex;
-        flex-direction: column;
-        gap: 5px;
-    }
+  .navigation {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
 
-    .nav-item {
-        display: flex;
-        min-height: 43px;
-        align-items: center;
-        gap: 12px;
-        padding: 0 12px;
-        border: 1px solid transparent;
-        border-radius: 8px;
-        color: #9ba1b2;
-        font-size: 13px;
-        transition: background 0.2s, color 0.2s;
-    }
+  .nav-item {
+    display: flex;
+    min-height: 43px;
+    align-items: center;
+    gap: 12px;
+    padding: 0 12px;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    color: #9ba1b2;
+    font-size: 13px;
+    transition:
+      background 0.2s,
+      color 0.2s;
+  }
 
-    .nav-item:hover {
-        color: #e8eaf0;
-        background: #1b1e2b;
-    }
+  .nav-item:hover {
+    color: #e8eaf0;
+    background: #1b1e2b;
+  }
 
-    .nav-item.active {
-        border-color: #35304f;
-        color: #bcb2ff;
-        background: #242038;
-    }
+  .nav-item.active {
+    border-color: #35304f;
+    color: #bcb2ff;
+    background: #242038;
+  }
 
-    .nav-icon {
-        width: 18px;
-        font-size: 17px;
-        text-align: center;
-    }
+  .nav-icon {
+    width: 18px;
+    font-size: 17px;
+    text-align: center;
+  }
 
-    .nav-count {
-        margin-left: auto;
-        color: #8d93a5;
-        font-size: 11px;
-    }
+  .nav-count {
+    margin-left: auto;
+    color: #8d93a5;
+    font-size: 11px;
+  }
 
-    .sidebar-bottom {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        margin-top: auto;
-        padding: 18px 8px 8px;
-        border-top: 1px solid #292d3c;
-        border-radius: 8px;
-        text-decoration: none;
-        cursor: pointer;
-        transition: background 0.2s;
-    }
+  .sidebar-bottom {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: auto;
+    padding: 18px 8px 8px;
+    border-top: 1px solid #292d3c;
+    border-radius: 8px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
 
-    .sidebar-bottom:hover {
-        background: #1b1e2b;
-    }
+  .sidebar-bottom:hover {
+    background: #1b1e2b;
+  }
 
-    .sidebar-bottom.profile-active {
-        background: #242038;
-    }
+  .sidebar-bottom.profile-active {
+    background: #242038;
+  }
 
-    .sidebar-bottom.profile-active .user-info strong {
-        color: #bcb2ff;
-    }
+  .sidebar-bottom.profile-active .user-info strong {
+    color: #bcb2ff;
+  }
 
-    .sidebar-bottom .user-info {
-        flex: 1;
-        min-width: 0;
-    }
+  .sidebar-bottom .user-info {
+    flex: 1;
+    min-width: 0;
+  }
 
-    .user-avatar {
-        display: grid;
-        width: 35px;
-        height: 35px;
-        flex-shrink: 0;
-        place-items: center;
-        border: 1px solid #514780;
-        border-radius: 50%;
-        color: #d6d0ff;
-        background: #302b50;
-        font-size: 11px;
-        font-weight: 700;
-    }
+  .user-avatar {
+    display: grid;
+    width: 35px;
+    height: 35px;
+    flex-shrink: 0;
+    place-items: center;
+    border: 1px solid #514780;
+    border-radius: 50%;
+    color: #d6d0ff;
+    background: #302b50;
+    font-size: 11px;
+    font-weight: 700;
+  }
 
-    .user-menu {
-        border: 0;
-        color: #969caf;
-        background: transparent;
-        font-size: 20px;
-    }
+  .user-menu {
+    border: 0;
+    color: #969caf;
+    background: transparent;
+    font-size: 20px;
+  }
 
-    .user-menu-wrapper {
-        position: relative;
-        flex-shrink: 0;
-    }
+  .user-menu-wrapper {
+    position: relative;
+    flex-shrink: 0;
+  }
 
-    .user-menu {
-        cursor: pointer;
-        padding: 4px 6px;
-        border-radius: 6px;
-    }
+  .user-menu {
+    cursor: pointer;
+    padding: 4px 6px;
+    border-radius: 6px;
+  }
 
-    .user-menu:hover {
-        background: #252937;
-    }
+  .user-menu:hover {
+    background: #252937;
+  }
 
-    .user-dropdown {
-        position: absolute;
-        right: 0;
-        bottom: calc(100% + 8px);
-        z-index: 20;
-        min-width: 150px;
-        padding: 5px;
-        border: 1px solid #353a4b;
-        border-radius: 9px;
-        background: #1b1e2b;
-        box-shadow: 0 10px 30px rgb(0 0 0 / 25%);
-    }
+  .user-dropdown {
+    position: absolute;
+    right: 0;
+    bottom: calc(100% + 8px);
+    z-index: 20;
+    min-width: 150px;
+    padding: 5px;
+    border: 1px solid #353a4b;
+    border-radius: 9px;
+    background: #1b1e2b;
+    box-shadow: 0 10px 30px rgb(0 0 0 / 25%);
+  }
 
-    .user-dropdown[hidden] {
-        display: none;
-    }
+  .user-dropdown[hidden] {
+    display: none;
+  }
 
-    .user-dropdown-item {
-        display: flex;
-        width: 100%;
-        align-items: center;
-        gap: 9px;
-        padding: 10px 12px;
-        border: 0;
-        border-radius: 6px;
-        color: #e8eaf0;
-        background: transparent;
-        text-align: left;
-        text-decoration: none;
-        font-family: inherit;
-        font-size: 12px;
-        cursor: pointer;
-    }
+  .user-dropdown-item {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    gap: 9px;
+    padding: 10px 12px;
+    border: 0;
+    border-radius: 6px;
+    color: #e8eaf0;
+    background: transparent;
+    text-align: left;
+    text-decoration: none;
+    font-family: inherit;
+    font-size: 12px;
+    cursor: pointer;
+  }
 
-    .user-dropdown-item:hover {
-        background: #302b50;
-        color: #c8c0ff;
-    }
+  .user-dropdown-item:hover {
+    background: #302b50;
+    color: #c8c0ff;
+  }
 
-    .user-dropdown .logout-option {
-        color: #ff9b9b;
-    }
+  .user-dropdown .logout-option {
+    color: #ff9b9b;
+  }
 
-    .user-dropdown .logout-option:disabled {
-        cursor: wait;
-        opacity: 0.6;
-    }
-    
+  .user-dropdown .logout-option:disabled {
+    cursor: wait;
+    opacity: 0.6;
+  }
+
+  .mobile-menu-button {
+    display: none;
+  }
+
+  .sidebar-overlay {
+    display: none;
+  }
+
+  @media (max-width: 760px) {
     .mobile-menu-button {
-        display: none;
+      position: fixed;
+      top: 14px;
+      right: 14px;
+      left: auto;
+      z-index: 1002;
+
+      display: flex;
+      width: 42px;
+      height: 42px;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      border: none;
+      border-radius: 0;
+      background: transparent;
+      cursor: pointer;
+    }
+
+    .mobile-menu-button span {
+      display: block;
+      width: 18px;
+      height: 2px;
+      border-radius: 2px;
+      background: #f0f0f7;
+    }
+
+    .sidebar {
+      display: flex;
+      width: min(280px, 85vw);
+      padding-top: 72px;
+      transform: translateX(-100%);
+      visibility: hidden;
+      transition:
+        transform 0.25s ease,
+        visibility 0.25s ease;
+      overflow-y: auto;
+    }
+
+    .sidebar.mobile-open {
+      transform: translateX(0);
+      visibility: visible;
+      z-index: 1001;
+    }
+
+    body:has(.sidebar.mobile-open) .mobile-menu-button {
+      display: none;
     }
 
     .sidebar-overlay {
-        display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      display: block;
+      background: rgb(0 0 0 / 55%);
     }
 
-    @media (max-width: 760px) {
-        .mobile-menu-button {
-            position: fixed;
-            top: 14px;
-            right: 14px;
-            left: auto;
-            z-index: 1002;
-
-            display: flex;
-            width: 42px;
-            height: 42px;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 5px;
-            border: none;
-            border-radius: 0;
-            background: transparent;
-            cursor: pointer;
-        }
-
-        .mobile-menu-button span {
-            display: block;
-            width: 18px;
-            height: 2px;
-            border-radius: 2px;
-            background: #f0f0f7;
-        }
-
-        .sidebar {
-            display: flex;
-            width: min(280px, 85vw);
-            padding-top: 72px;
-            transform: translateX(-100%);
-            visibility: hidden;
-            transition:
-                transform 0.25s ease,
-                visibility 0.25s ease;
-            overflow-y: auto;
-        }
-
-        .sidebar.mobile-open {
-            transform: translateX(0);
-            visibility: visible;
-            z-index: 1001;
-        }
-
-        body:has(.sidebar.mobile-open) .mobile-menu-button {
-            display: none;
-        }
-
-        .sidebar-overlay {
-            position: fixed;
-            inset: 0;
-            z-index: 1000;
-            display: block;
-            background: rgb(0 0 0 / 55%);
-        }
-
-        .sidebar-overlay[hidden] {
-            display: none;
-        }
+    .sidebar-overlay[hidden] {
+      display: none;
     }
+  }
 </style>
 
 <script>
-    import { supabase } from "../lib/supabase";
+  import { supabase } from "../lib/supabase";
 
-    const mobileMenuButton = document.querySelector<HTMLButtonElement>(
-        "#mobile-menu-button"
-    );
-    const sidebar = document.querySelector<HTMLElement>("#devtask-sidebar");
-    const sidebarOverlay = document.querySelector<HTMLElement>(
-        "#sidebar-overlay"
-    );
+  const mobileMenuButton = document.querySelector<HTMLButtonElement>(
+    "#mobile-menu-button",
+  );
+  const sidebar = document.querySelector<HTMLElement>("#devtask-sidebar");
+  const sidebarOverlay =
+    document.querySelector<HTMLElement>("#sidebar-overlay");
 
-    function closeMobileSidebar() {
-        sidebar?.classList.remove("mobile-open");
-        sidebarOverlay?.setAttribute("hidden", "");
-        mobileMenuButton?.setAttribute("aria-expanded", "false");
-        mobileMenuButton?.setAttribute(
-            "aria-label",
-            "Open navigation menu"
-        );
+  function closeMobileSidebar() {
+    sidebar?.classList.remove("mobile-open");
+    sidebarOverlay?.setAttribute("hidden", "");
+    mobileMenuButton?.setAttribute("aria-expanded", "false");
+    mobileMenuButton?.setAttribute("aria-label", "Open navigation menu");
+  }
+
+  mobileMenuButton?.addEventListener("click", () => {
+    if (!sidebar || !sidebarOverlay) return;
+
+    const isOpen = sidebar.classList.toggle("mobile-open");
+
+    if (isOpen) {
+      sidebarOverlay.removeAttribute("hidden");
+    } else {
+      sidebarOverlay.setAttribute("hidden", "");
     }
 
-    mobileMenuButton?.addEventListener("click", () => {
-        if (!sidebar || !sidebarOverlay) return;
+    mobileMenuButton.setAttribute("aria-expanded", String(isOpen));
+    mobileMenuButton.setAttribute(
+      "aria-label",
+      isOpen ? "Close navigation menu" : "Open navigation menu",
+    );
+  });
 
-        const isOpen = sidebar.classList.toggle("mobile-open");
+  sidebarOverlay?.addEventListener("click", closeMobileSidebar);
 
-        if (isOpen) {
-            sidebarOverlay.removeAttribute("hidden");
-        } else {
-            sidebarOverlay.setAttribute("hidden", "");
-        }
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      closeMobileSidebar();
+    }
+  });
 
-        mobileMenuButton.setAttribute("aria-expanded", String(isOpen));
-        mobileMenuButton.setAttribute(
-            "aria-label",
-            isOpen ? "Close navigation menu" : "Open navigation menu"
-        );
-    });
+  sidebar?.querySelectorAll<HTMLAnchorElement>(".nav-item").forEach((link) => {
+    link.addEventListener("click", closeMobileSidebar);
+  });
 
-    sidebarOverlay?.addEventListener("click", closeMobileSidebar);
+  const userNameElement = document.querySelector<HTMLElement>("#user-name");
+  const userAvatarElement = document.querySelector<HTMLElement>("#user-avatar");
 
-    document.addEventListener("keydown", (event) => {
-        if (event.key === "Escape") {
-            closeMobileSidebar();
-        }
-    });
-
-    sidebar?.querySelectorAll<HTMLAnchorElement>(".nav-item").forEach((link) => {
-        link.addEventListener("click", closeMobileSidebar);
-    });
-
-    const userNameElement = document.querySelector<HTMLElement>("#user-name");
-    const userEmailElement = document.querySelector<HTMLElement>("#user-email");
-    const userAvatarElement = document.querySelector<HTMLElement>("#user-avatar");
-
-    async function loadUserProfile() {
+  async function loadUserProfile() {
     const { data, error } = await supabase.auth.getUser();
 
-    if (error || !data.user) {
-        window.location.href = "/login";
-        return;
-    }
+    const user = error ? null : data.user;
 
-    const user = data.user;
-    const displayName =
-        user.user_metadata?.full_name ||
+    const displayName = user
+      ? user.user_metadata?.full_name ||
         user.user_metadata?.name ||
         user.email?.split("@")[0] ||
-        "User";
+        "User"
+      : "Sign in";
 
     if (userNameElement) {
-        userNameElement.textContent = displayName;
-    }
-
-    if (userEmailElement) {
-        userEmailElement.textContent = user.email || "Personal workspace";
+      userNameElement.textContent = displayName;
     }
 
     if (userAvatarElement) {
-        userAvatarElement.textContent = displayName
+      userAvatarElement.textContent = displayName
         .split(/\s+/)
         .filter(Boolean)
         .slice(0, 2)
         .map((part: string) => part.charAt(0).toUpperCase())
         .join("");
     }
-    }
+  }
 
-    loadUserProfile();
+  loadUserProfile();
 </script>
