@@ -1,63 +1,32 @@
-# Astro Starter Kit: Blog
+# DevTask
 
-```sh
-npm create astro@latest -- --template blog
-```
+<p align="center">
+  <em>Plan smarter. Stay focused. Get things done.</em>
+</p>
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+---
 
-Features:
+DevTask is a task management dashboard designed to help users organize their work, track progress, and stay focused on what matters. With a clean interface and a structured overview of daily activities, DevTask makes managing tasks feel simpler and more intuitive.
 
-- ✅ Minimal styling (make it your own!)
-- ✅ 100/100 Lighthouse performance
-- ✅ SEO-friendly with canonical URLs and Open Graph data
-- ✅ Sitemap support
-- ✅ RSS Feed support
-- ✅ Markdown & MDX support
+### Features
 
-## 🚀 Project Structure
+- **Task Management** — Organize and manage daily tasks.
+- **Progress Tracking** — Monitor productivity and task completion.
+- **Dashboard Overview** — View task statistics and weekly progress.
+- **Search & Filters** — Find and organize tasks more efficiently.
+- **Authentication** — User authentication powered by Supabase.
+- **Responsive Interface** — A modern layout designed for different screen sizes.
 
-Inside of your Astro project, you'll see the following folders and files:
+### Built With
 
-```text
-├── public/
-├── src/
-│   ├── assets/
-│   ├── components/
-│   ├── content/
-│   ├── layouts/
-│   └── pages/
-├── astro.config.mjs
-├── README.md
-├── package.json
-└── tsconfig.json
-```
+Astro · JavaScript · CSS · Supabase
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+### Here
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+[devtask-beta.vercel.app](https://devtask-beta.vercel.app/)
 
-The `src/content/` directory contains "collections" of related Markdown and MDX documents. Use `getCollection()` to retrieve posts from `src/content/blog/`, and type-check your frontmatter using an optional schema. See [Astro's Content Collections docs](https://docs.astro.build/en/guides/content-collections/) to learn more.
+---
 
-Any static assets, like images, can be placed in the `public/` directory.
-
-## 🧞 Commands
-
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Check out [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
-
-## Credit
-
-This theme is based off of the lovely [Bear Blog](https://github.com/HermanMartinus/bearblog/).
+<p align="center">
+  Developed by <a href="https://github.com/x3n99">xen</a>
+</p>
