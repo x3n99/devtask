@@ -597,13 +597,13 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // Visitors must log in before opening the task form.
     if (!isAuthenticated) {
-      modal.hidden = true;
+      modalElement.hidden = true;
       window.location.href = `/login?redirect=${encodeURIComponent(currentPath)}`;
       return;
     }
 
-    modal.hidden = false;
-    titleInput.focus();
+    modalElement.hidden = false;
+    titleInputElement.focus();
   }
 
 
