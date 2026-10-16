@@ -1,5 +1,9 @@
 {
   "appId": "com.xen.devtask",
   "appName": "DevTask",
-  "webDir": "dist"
+  "webDir": "dist",
+  "server": {
+    "hostname": "devtask-beta.vercel.app",
+    "androidScheme": "https"
+  }
 }
