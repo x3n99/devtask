@@ -1,0 +1,19 @@
+[
+  {
+    "relation": ["delegate_permission/common.get_login_creds"],
+    "target": {
+      "namespace": "web",
+      "site": "https://devtask-beta.vercel.app"
+    }
+  },
+  {
+    "relation": ["delegate_permission/common.get_login_creds"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.xen.devtask",
+      "sha256_cert_fingerprints": [
+        "36:06:ED:DD:F3:A8:B2:4B:06:1A:11:CB:63:0C:18:97:AD:A3:1D:C8:49:05:D9:F4:AC:E3:39:17:C1:12:08:2A"
+      ]
+    }
+  }
+]

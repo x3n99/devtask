@@ -1,3 +1,4 @@
+import { Capacitor } from "@capacitor/core";
 import { supabase } from "../lib/supabase.js";
 
 type Task = {
@@ -389,7 +390,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       checkbox.addEventListener("change", async () => {
         if (!isAuthenticated || String(task.id).startsWith("demo-")) {
           checkbox.checked = task.completed;
-          window.location.href = "/login";
+          window.location.href = "/login/index.html";
           return;
         }
         const nextCompleted = checkbox.checked;
@@ -598,7 +599,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Visitors must log in before opening the task form.
     if (!isAuthenticated) {
       modalElement.hidden = true;
-      window.location.href = `/login?redirect=${encodeURIComponent(currentPath)}`;
+      window.location.href = `/login/index.html?redirect=${encodeURIComponent(currentPath)}`;
       return;
     }
 
@@ -645,7 +646,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     if (!isAuthenticated) {
       closeModal();
-      window.location.href = "/login";
+      window.location.href = "/login/index.html";
       return;
     }
 
@@ -774,21 +775,62 @@ document.addEventListener("DOMContentLoaded", async () => {
   });
 
   // Public dashboard: visitors can view demo data without signing in.
-  const dashboard = document.querySelector<HTMLElement>("#dashboard-content");
+  const dashboardShell =
+    document.querySelector<HTMLElement>("#dashboard-shell");
+  const dashboardLoading =
+    document.querySelector<HTMLElement>("#dashboard-loading");
+  const isNativeApp = Capacitor.isNativePlatform();
+  const workspaceDate = document.querySelector<HTMLElement>("#workspace-date");
 
-  const { data: sessionData, error: sessionError } =
-    await supabase.auth.getSession();
-
-  if (sessionError) {
-    console.error("DevTask session check failed:", sessionError.message);
+  if (workspaceDate) {
+    workspaceDate.textContent =
+      new Date()
+        .toLocaleDateString("en-US", { weekday: "long" })
+        .toUpperCase() + ", YOUR WORKSPACE";
   }
 
-  let isAuthenticated = Boolean(sessionData.session);
+  let sessionResult: Awaited<
+    ReturnType<typeof supabase.auth.getSession>
+  > | null = null;
+  let sessionTimeout: number | undefined;
+
+  try {
+    sessionResult = await Promise.race([
+      supabase.auth.getSession(),
+      new Promise<never>((_, reject) => {
+        sessionTimeout = window.setTimeout(
+          () => reject(new Error("Session check timed out.")),
+          8000,
+        );
+      }),
+    ]);
+  } catch (error) {
+    console.error("DevTask session check failed:", error);
+    if (isNativeApp) {
+      window.location.replace("/login/index.html");
+      return;
+    }
+  } finally {
+    if (sessionTimeout !== undefined) {
+      window.clearTimeout(sessionTimeout);
+    }
+  }
+
+  if (sessionResult?.error) {
+    console.error("DevTask session check failed:", sessionResult.error.message);
+  }
+
+  const isAuthenticated = Boolean(sessionResult?.data.session);
 
   if (!isAuthenticated) {
-    // Keep the dashboard visible and use local demo data.
+    if (isNativeApp) {
+      window.location.replace("/login/index.html");
+      return;
+    }
 
-    if (dashboard) dashboard.hidden = false;
+    // Keep the dashboard visible and use local demo data.
+    if (dashboardLoading) dashboardLoading.hidden = true;
+    if (dashboardShell) dashboardShell.hidden = false;
 
     renderTasks();
     updateStats();
@@ -799,7 +841,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     function requireLogin(): boolean {
       if (isAuthenticated) return true;
 
-      window.location.href = "/login";
+      window.location.href = "/login/index.html";
       return false;
     }
 
@@ -817,7 +859,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         target.classList.contains("task-checkbox") &&
         !isAuthenticated
       ) {
-        window.location.href = "/login";
+        window.location.href = "/login/index.html";
       }
     });
 
@@ -828,14 +870,14 @@ document.addEventListener("DOMContentLoaded", async () => {
         target.closest(".edit-task, .delete-task") &&
         !isAuthenticated
       ) {
-        window.location.href = "/login";
+        window.location.href = "/login/index.html";
       }
     });
 
     form.addEventListener("submit", (event) => {
       if (!isAuthenticated) {
         event.preventDefault();
-        window.location.href = "/login";
+        window.location.href = "/login/index.html";
       }
     });
 
@@ -850,7 +892,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   // Authenticated users load their own data from Supabase.
-  if (dashboard) dashboard.hidden = false;
+  if (dashboardLoading) dashboardLoading.hidden = true;
+  if (dashboardShell) dashboardShell.hidden = false;
 
   const projectsLoaded = await loadProjects();
 

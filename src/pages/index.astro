@@ -7,27 +7,22 @@ import TaskList from "../components/TaskList.astro";
 ---
 
 <BaseLayout title="DevTask — Dashboard">
-  <Sidebar />
+  <main
+    class="dashboard-loading"
+    id="dashboard-loading"
+    role="status"
+    aria-live="polite"
+  >
+    <p>Opening sign in...</p>
+  </main>
 
-  <main class="dashboard" id="dashboard-content">
+  <div id="dashboard-shell" hidden>
+    <Sidebar />
+
+    <main class="dashboard" id="dashboard-content" data-page-cache>
     <header class="page-header">
       <div>
         <p class="eyebrow" id="workspace-date"></p>
-        <script>
-          const workspaceDate = document.getElementById(
-            "workspace-date",
-          ) as HTMLElement | null;
-
-          if (workspaceDate) {
-            workspaceDate.textContent =
-              new Date()
-                .toLocaleDateString("en-US", {
-                  weekday: "long",
-                })
-                .toUpperCase() + ", YOUR WORKSPACE";
-          }
-        </script>
-
         <h1>Overview<span>.</span></h1>
         <p class="page-description">
           Here's what's happening with your tasks today.
@@ -156,10 +151,32 @@ import TaskList from "../components/TaskList.astro";
         </form>
       </section>
     </div>
-  </main>
+    </main>
+  </div>
 </BaseLayout>
 
 <style is:global>
+  .dashboard-loading {
+    display: grid;
+    min-height: 100vh;
+    place-content: center;
+    gap: 12px;
+    padding: 24px;
+    background: #0c0e14;
+    color: #e8eaf0;
+    font-family: "DM Sans", sans-serif;
+    text-align: center;
+  }
+
+  .dashboard-loading p {
+    margin: 0;
+    color: #9299aa;
+  }
+
+  .dashboard-loading[hidden] {
+    display: none;
+  }
+
   #dashboard-content[hidden] {
     display: none !important;
   }

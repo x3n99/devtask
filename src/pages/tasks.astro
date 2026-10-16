@@ -6,7 +6,7 @@ import Sidebar from "../components/Sidebar.astro";
 <BaseLayout title="DevTask — My Tasks">
     <Sidebar />
 
-    <main class="tasks-page">
+    <main class="tasks-page" data-page-cache>
         <header class="page-header">
             <div>
                 <p class="eyebrow">YOUR WORKSPACE</p>
@@ -1284,7 +1284,7 @@ import Sidebar from "../components/Sidebar.astro";
             await supabase.auth.getSession();
 
         if (sessionError || !sessionData.session) {
-            window.location.replace("/login");
+            window.location.replace("/login/index.html");
             return;
         }
 
@@ -1325,7 +1325,7 @@ import Sidebar from "../components/Sidebar.astro";
 
         supabase.auth.onAuthStateChange((event, session) => {
             if (event === "SIGNED_OUT" || !session) {
-                window.location.replace("/login");
+                window.location.replace("/login/index.html");
             }
         });
     });

@@ -15,8 +15,14 @@
     "@astrojs/mdx": "^8.0.3",
     "@astrojs/rss": "^4.0.19",
     "@astrojs/sitemap": "^3.7.4",
+    "@capacitor/android": "^8.5.3",
+    "@capacitor/core": "^8.5.3",
+    "@capacitor/ios": "^8.5.3",
     "@supabase/supabase-js": "^2.117.3",
     "astro": "^7.3.8",
     "sharp": "^0.35.0"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^8.5.3"
   }
 }

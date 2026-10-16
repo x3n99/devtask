@@ -54,6 +54,13 @@ a {
   background: #6556d9;
 }
 
+@media (max-width: 760px) {
+  body:has(.mobile-app-header) {
+    padding-top: calc(58px + env(safe-area-inset-top));
+    padding-bottom: calc(71px + env(safe-area-inset-bottom));
+  }
+}
+
 .delete-modal-overlay {
     position: fixed;
     inset: 0;

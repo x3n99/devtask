@@ -6,7 +6,7 @@ import Sidebar from "../components/Sidebar.astro";
 <BaseLayout title="DevTask — Profile">
     <Sidebar />
 
-    <main class="profile-page">
+    <main class="profile-page" data-page-cache aria-busy="true">
         <header class="page-header">
             <div>
                 <p class="eyebrow">YOUR WORKSPACE</p>
@@ -165,7 +165,7 @@ import Sidebar from "../components/Sidebar.astro";
         const { data, error } = await supabase.auth.getUser();
 
         if (error || !data.user) {
-            window.location.href = "/login";
+            window.location.href = "/login/index.html";
             return;
         }
 
@@ -181,6 +181,10 @@ import Sidebar from "../components/Sidebar.astro";
         previewName.textContent = name;
         previewEmail.textContent = user.email || "No email";
         avatar.textContent = getInitials(name);
+        document.querySelector<HTMLElement>(".profile-page")?.setAttribute(
+            "aria-busy",
+            "false",
+        );
     }
 
     nameInput.addEventListener("input", () => {
@@ -209,7 +213,7 @@ import Sidebar from "../components/Sidebar.astro";
         const { data: userData, error: userError } = await supabase.auth.getUser();
 
         if (userError || !userData.user) {
-            window.location.href = "/login";
+            window.location.href = "/login/index.html";
             return;
         }
 
@@ -307,7 +311,7 @@ import Sidebar from "../components/Sidebar.astro";
             return;
         }
 
-        window.location.href = "/login";
+        window.location.href = "/login/index.html";
     });
 
     loadProfile();
@@ -606,7 +610,7 @@ import Sidebar from "../components/Sidebar.astro";
         .profile-page {
             width: 100%;
             margin-left: 0;
-            padding: 78px 20px 30px;
+            padding: 30px 20px;
         }
 
         .page-header {

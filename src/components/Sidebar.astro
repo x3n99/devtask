@@ -1,24 +1,27 @@
 ---
-const currentPath = Astro.url.pathname;
+const currentPath = Astro.url.pathname.replace(/\/$/, "") || "/";
+const currentSection =
+  currentPath === "/tasks"
+    ? "Tasks"
+    : currentPath === "/projects" || currentPath === "/project"
+      ? "Projects"
+      : currentPath === "/calendar"
+        ? "Calendar"
+        : currentPath === "/profile"
+          ? "Profile"
+          : "Overview";
 ---
 
-<button
-  class="mobile-menu-button"
-  id="mobile-menu-button"
-  type="button"
-  aria-label="Open navigation menu"
-  aria-expanded="false"
-  aria-controls="devtask-sidebar"
->
-  <span></span>
-  <span></span>
-  <span></span>
-</button>
-
-<div class="sidebar-overlay" id="sidebar-overlay" hidden></div>
+<header class="mobile-app-header">
+  <a class="mobile-brand" href="/index.html">
+    <span class="mobile-brand-icon">D</span>
+    <span>DevTask</span>
+  </a>
+  <span class="mobile-page-title">{currentSection}</span>
+</header>
 
 <aside class="sidebar" id="devtask-sidebar">
-  <a href="/" class="brand">
+  <a href="/index.html" class="brand">
     <span class="brand-icon">D</span>
     <span class="brand-name">devtask<span>.</span></span>
   </a>
@@ -26,26 +29,29 @@ const currentPath = Astro.url.pathname;
   <div class="nav-section">
     <p class="nav-label">WORKSPACE</p>
 
-    <nav class="navigation">
-      <a href="/" class={`nav-item ${currentPath === "/" ? "active" : ""}`}>
+    <nav class="navigation" aria-label="Primary navigation">
+      <a
+        href="/index.html"
+        class={`nav-item ${currentPath === "/" ? "active" : ""}`}
+      >
         <span class="nav-icon">▦</span>
         <span>Overview</span>
       </a>
 
-      <a href="/tasks" class="nav-item">
+      <a href="/tasks/index.html" class="nav-item">
         <span class="nav-icon">☑</span>
         <span>My Tasks</span>
       </a>
 
       <a
-        href="/projects"
+        href="/projects/index.html"
         class={`nav-item ${currentPath === "/projects" ? "active" : ""}`}
       >
         <span class="nav-icon">◫</span>
         <span>Projects</span>
       </a>
 
-      <a href="/calendar" class="nav-item">
+      <a href="/calendar/index.html" class="nav-item">
         <span class="nav-icon">▦</span>
         <span>Calendar</span>
       </a>
@@ -53,7 +59,7 @@ const currentPath = Astro.url.pathname;
   </div>
 
   <a
-    href="/profile"
+    href="/profile/index.html"
     class={`sidebar-bottom ${currentPath === "/profile" ? "profile-active" : ""}`}
     aria-label="Open profile"
   >
@@ -65,7 +71,72 @@ const currentPath = Astro.url.pathname;
   </a>
 </aside>
 
+<nav class="mobile-bottom-nav" aria-label="Primary navigation">
+  <a
+    class:list={["mobile-nav-item", currentPath === "/" && "active"]}
+    href="/index.html"
+    aria-current={currentPath === "/" ? "page" : undefined}
+  >
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <rect x="3.5" y="3.5" width="7" height="7" rx="1.5" />
+      <rect x="13.5" y="3.5" width="7" height="7" rx="1.5" />
+      <rect x="3.5" y="13.5" width="7" height="7" rx="1.5" />
+      <rect x="13.5" y="13.5" width="7" height="7" rx="1.5" />
+    </svg>
+    <span>Home</span>
+  </a>
+  <a
+    class:list={["mobile-nav-item", currentPath === "/tasks" && "active"]}
+    href="/tasks/index.html"
+    aria-current={currentPath === "/tasks" ? "page" : undefined}
+  >
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="m5 12 4 4L19 6" />
+      <path d="M19 12v6a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h8" />
+    </svg>
+    <span>Tasks</span>
+  </a>
+  <a
+    class:list={["mobile-nav-item", currentSection === "Projects" && "active"]}
+    href="/projects/index.html"
+    aria-current={currentSection === "Projects" ? "page" : undefined}
+  >
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M3.5 7.5h7l2 2h8v9a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2z" />
+      <path d="M3.5 7.5v-2a2 2 0 0 1 2-2h4l2 2h6a2 2 0 0 1 2 2v2" />
+    </svg>
+    <span>Projects</span>
+  </a>
+  <a
+    class:list={["mobile-nav-item", currentPath === "/calendar" && "active"]}
+    href="/calendar/index.html"
+    aria-current={currentPath === "/calendar" ? "page" : undefined}
+  >
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <rect x="3.5" y="5" width="17" height="15.5" rx="2" />
+      <path d="M7.5 3.5v3M16.5 3.5v3M3.5 9.5h17M8 13h.01M12 13h.01M16 13h.01M8 16.5h.01M12 16.5h.01" />
+    </svg>
+    <span>Calendar</span>
+  </a>
+  <a
+    class:list={["mobile-nav-item", currentPath === "/profile" && "active"]}
+    href="/profile/index.html"
+    aria-current={currentPath === "/profile" ? "page" : undefined}
+  >
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <circle cx="12" cy="8" r="3.5" />
+      <path d="M5 20a7 7 0 0 1 14 0" />
+    </svg>
+    <span>Profile</span>
+  </a>
+</nav>
+
 <style>
+  .mobile-app-header,
+  .mobile-bottom-nav {
+    display: none;
+  }
+
   .sidebar {
     position: fixed;
     inset: 0 auto 0 0;
@@ -332,75 +403,103 @@ const currentPath = Astro.url.pathname;
     opacity: 0.6;
   }
 
-  .mobile-menu-button {
-    display: none;
-  }
-
-  .sidebar-overlay {
-    display: none;
-  }
-
   @media (max-width: 760px) {
-    .mobile-menu-button {
+    .mobile-app-header {
       position: fixed;
-      top: 14px;
-      right: 14px;
-      left: auto;
+      inset: 0 0 auto;
       z-index: 1002;
-
       display: flex;
-      width: 42px;
-      height: 42px;
-      flex-direction: column;
+      height: calc(58px + env(safe-area-inset-top));
       align-items: center;
-      justify-content: center;
-      gap: 5px;
-      border: none;
-      border-radius: 0;
-      background: transparent;
-      cursor: pointer;
+      justify-content: space-between;
+      gap: 12px;
+      padding: env(safe-area-inset-top) 18px 0;
+      border-bottom: 1px solid #252937;
+      background: rgb(17 19 28 / 96%);
+      backdrop-filter: blur(16px);
     }
 
-    .mobile-menu-button span {
-      display: block;
-      width: 18px;
-      height: 2px;
-      border-radius: 2px;
-      background: #f0f0f7;
+    .mobile-brand {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      color: #f0f0f7;
+      font-family: "Plus Jakarta Sans", sans-serif;
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: -0.4px;
+    }
+
+    .mobile-brand-icon {
+      display: grid;
+      width: 30px;
+      height: 30px;
+      place-items: center;
+      border-radius: 9px;
+      color: #fff;
+      background: #7668f5;
+      font-size: 18px;
+    }
+
+    .mobile-page-title {
+      margin-left: auto;
+      color: #aeb4c3;
+      font-size: 12px;
+      font-weight: 600;
     }
 
     .sidebar {
-      display: flex;
-      width: min(280px, 85vw);
-      padding-top: 72px;
-      transform: translateX(-100%);
-      visibility: hidden;
-      transition:
-        transform 0.25s ease,
-        visibility 0.25s ease;
-      overflow-y: auto;
-    }
-
-    .sidebar.mobile-open {
-      transform: translateX(0);
-      visibility: visible;
-      z-index: 1001;
-    }
-
-    body:has(.sidebar.mobile-open) .mobile-menu-button {
       display: none;
     }
 
-    .sidebar-overlay {
+    .mobile-bottom-nav {
       position: fixed;
-      inset: 0;
-      z-index: 1000;
-      display: block;
-      background: rgb(0 0 0 / 55%);
+      inset: auto 0 0;
+      z-index: 1002;
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      min-height: calc(64px + env(safe-area-inset-bottom));
+      padding: 7px 8px calc(7px + env(safe-area-inset-bottom));
+      border-top: 1px solid #292d3c;
+      background: rgb(17 19 28 / 97%);
+      backdrop-filter: blur(16px);
     }
 
-    .sidebar-overlay[hidden] {
-      display: none;
+    .mobile-nav-item {
+      display: flex;
+      min-width: 0;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 4px;
+      border-radius: 10px;
+      color: #858b9d;
+      font-size: 9px;
+      font-weight: 600;
+      text-decoration: none;
+      transition:
+        color 0.18s ease,
+        background-color 0.18s ease;
+    }
+
+    .mobile-nav-item svg {
+      width: 21px;
+      height: 21px;
+      fill: none;
+      stroke: currentColor;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-width: 1.7;
+    }
+
+    .mobile-nav-item.active {
+      color: #bcb2ff;
+      background: #242038;
+    }
+
+    .mobile-nav-item:focus-visible {
+      outline: 2px solid #a195ff;
+      outline-offset: -2px;
     }
   }
 </style>
@@ -408,52 +507,14 @@ const currentPath = Astro.url.pathname;
 <script>
   import { supabase } from "../lib/supabase";
 
-  const mobileMenuButton = document.querySelector<HTMLButtonElement>(
-    "#mobile-menu-button",
-  );
-  const sidebar = document.querySelector<HTMLElement>("#devtask-sidebar");
-  const sidebarOverlay =
-    document.querySelector<HTMLElement>("#sidebar-overlay");
-
-  function closeMobileSidebar() {
-    sidebar?.classList.remove("mobile-open");
-    sidebarOverlay?.setAttribute("hidden", "");
-    mobileMenuButton?.setAttribute("aria-expanded", "false");
-    mobileMenuButton?.setAttribute("aria-label", "Open navigation menu");
-  }
-
-  mobileMenuButton?.addEventListener("click", () => {
-    if (!sidebar || !sidebarOverlay) return;
-
-    const isOpen = sidebar.classList.toggle("mobile-open");
-
-    if (isOpen) {
-      sidebarOverlay.removeAttribute("hidden");
-    } else {
-      sidebarOverlay.setAttribute("hidden", "");
-    }
-
-    mobileMenuButton.setAttribute("aria-expanded", String(isOpen));
-    mobileMenuButton.setAttribute(
-      "aria-label",
-      isOpen ? "Close navigation menu" : "Open navigation menu",
-    );
-  });
-
-  sidebarOverlay?.addEventListener("click", closeMobileSidebar);
-
-  document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape") {
-      closeMobileSidebar();
-    }
-  });
-
-  sidebar?.querySelectorAll<HTMLAnchorElement>(".nav-item").forEach((link) => {
-    link.addEventListener("click", closeMobileSidebar);
-  });
-
   const userNameElement = document.querySelector<HTMLElement>("#user-name");
   const userAvatarElement = document.querySelector<HTMLElement>("#user-avatar");
+
+  supabase.auth.onAuthStateChange((event) => {
+    if (event === "SIGNED_OUT") {
+      window.dispatchEvent(new Event("devtask:clear-page-cache"));
+    }
+  });
 
   async function loadUserProfile() {
     const { data, error } = await supabase.auth.getUser();
@@ -471,14 +532,14 @@ const currentPath = Astro.url.pathname;
       userNameElement.textContent = displayName;
     }
 
-    if (userAvatarElement) {
-      userAvatarElement.textContent = displayName
-        .split(/\s+/)
-        .filter(Boolean)
-        .slice(0, 2)
-        .map((part: string) => part.charAt(0).toUpperCase())
-        .join("");
-    }
+    const initials = displayName
+      .split(/\s+/)
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((part: string) => part.charAt(0).toUpperCase())
+      .join("");
+    if (userAvatarElement) userAvatarElement.textContent = initials;
+    if (userAvatarElement) userAvatarElement.textContent = initials;
   }
 
   loadUserProfile();

@@ -1,0 +1,8 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">DevTask</string>
+    <string name="title_activity_main">DevTask</string>
+    <string name="package_name">com.xen.devtask</string>
+    <string name="custom_url_scheme">com.xen.devtask</string>
+    <string name="asset_statements">[{\"include\":\"https://devtask-beta.vercel.app/.well-known/assetlinks.json\"}]</string>
+</resources>

@@ -6,8 +6,8 @@ import Sidebar from "../components/Sidebar.astro";
 <BaseLayout title="DevTask — Project Details">
     <Sidebar />
 
-    <main class="detail-page">
-        <a class="back-link" href="/projects">
+    <main class="detail-page" data-page-cache>
+        <a class="back-link" href="/projects/index.html">
         <span aria-hidden="true">←</span> Back to projects
         </a>
 
@@ -260,7 +260,7 @@ import Sidebar from "../components/Sidebar.astro";
             await supabase.auth.getSession();
 
         if (sessionError || !sessionData.session) {
-            window.location.replace("/login");
+            window.location.replace("/login/index.html");
             return;
         }
 
@@ -528,7 +528,7 @@ import Sidebar from "../components/Sidebar.astro";
 
         supabase.auth.onAuthStateChange((event) => {
             if (event === "SIGNED_OUT") {
-            window.location.replace("/login");
+            window.location.replace("/login/index.html");
             }
         });
         });

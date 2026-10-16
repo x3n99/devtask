@@ -16,9 +16,115 @@ const { title = "DevTask" } = Astro.props;
     <meta name="description" content="DevTask" />
     <link rel="icon" type="image/png" href="/favicon.png" />
     <title>{title}</title>
+    <script is:inline>
+      try {
+        const dashboardPath =
+          location.pathname.replace(/index\.html$/, "") || "/";
+
+        if (
+          dashboardPath === "/" &&
+          sessionStorage.getItem("devtask-page-cache:/")
+        ) {
+          document.documentElement.dataset.dashboardCached = "true";
+        }
+      } catch (error) {
+        console.warn("Could not check the cached dashboard.", error);
+      }
+    </script>
+    <style is:inline>
+      html[data-dashboard-cached="true"] #dashboard-loading {
+        display: none !important;
+      }
+    </style>
   </head>
 
   <body>
     <slot />
+    <script is:inline>
+      (() => {
+        const cachePrefix = "devtask-page-cache:";
+        const page = document.querySelector("[data-page-cache]");
+        const cachePath =
+          location.pathname.replace(/index\.html$/, "") || "/";
+        const cacheKey = `${cachePrefix}${cachePath}${location.search}`;
+
+        if (page) {
+          try {
+            const cachedMarkup = sessionStorage.getItem(cacheKey);
+
+            if (cachedMarkup) {
+              page.innerHTML = cachedMarkup;
+              page.dataset.pageCacheRestored = "true";
+
+              const dashboardShell =
+                document.querySelector<HTMLElement>("#dashboard-shell");
+              const dashboardLoading =
+                document.querySelector<HTMLElement>("#dashboard-loading");
+
+              if (dashboardShell && dashboardLoading) {
+                dashboardShell.hidden = false;
+                dashboardLoading.hidden = true;
+              }
+            } else if (cachePath === "/") {
+              document.documentElement.removeAttribute("data-dashboard-cached");
+            }
+
+            window.addEventListener("pagehide", () => {
+              const openDialog = page.querySelector(
+                '[role="dialog"]:not([hidden])',
+              );
+
+              if (
+                page.closest("[hidden]") ||
+                page.querySelector(
+                  ".loading, .loading-state, .task-loading, [aria-busy='true']",
+                ) ||
+                (openDialog && !openDialog.closest("[hidden]"))
+              ) {
+                return;
+              }
+
+              try {
+                page.querySelectorAll("input, textarea, select").forEach((field) => {
+                  if (field instanceof HTMLInputElement) {
+                    if (field.type === "checkbox" || field.type === "radio") {
+                      field.toggleAttribute("checked", field.checked);
+                    } else if (field.type !== "password" && field.type !== "file") {
+                      field.setAttribute("value", field.value);
+                    }
+                  } else if (field instanceof HTMLTextAreaElement) {
+                    field.textContent = field.value;
+                  } else if (field instanceof HTMLSelectElement) {
+                    field.querySelectorAll("option").forEach((option) => {
+                      option.toggleAttribute("selected", option.selected);
+                    });
+                  }
+                });
+
+                sessionStorage.setItem(cacheKey, page.innerHTML);
+              } catch (error) {
+                console.warn("Could not cache the current page.", error);
+              }
+            });
+          } catch (error) {
+            console.warn("Could not restore the cached page.", error);
+          }
+        }
+
+        window.addEventListener("devtask:clear-page-cache", () => {
+          try {
+            for (let index = sessionStorage.length - 1; index >= 0; index--) {
+              const key = sessionStorage.key(index);
+
+              if (key?.startsWith(cachePrefix)) {
+                sessionStorage.removeItem(key);
+              }
+            }
+          } catch (error) {
+            console.warn("Could not clear cached pages.", error);
+          }
+        });
+      })();
+    </script>
   </body>
 </html>

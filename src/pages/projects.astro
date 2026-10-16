@@ -6,7 +6,7 @@ import Sidebar from "../components/Sidebar.astro";
 <BaseLayout title="DevTask — Projects">
     <Sidebar />
 
-    <main class="dashboard projects-page">
+    <main class="dashboard projects-page" data-page-cache>
         <header class="page-header">
             <div>
                 <p class="eyebrow">YOUR WORKSPACE</p>
@@ -322,9 +322,11 @@ import Sidebar from "../components/Sidebar.astro";
         };
 
         const loadProjects = async () => {
-            message.hidden = false;
-            message.textContent = "Loading projects...";
-            grid.innerHTML = "";
+            if (document.querySelector("main[data-page-cache]")?.dataset.pageCacheRestored !== "true") {
+                message.hidden = false;
+                message.textContent = "Loading projects...";
+                grid.innerHTML = "";
+            }
 
             const { data: projectRows, error: projectError } = await supabase
             .from("projects")
@@ -390,7 +392,7 @@ import Sidebar from "../components/Sidebar.astro";
                 const projectId = card?.dataset.projectId;
 
                 if (projectId && grid.contains(card)) {
-                    window.location.href = `/project?id=${encodeURIComponent(projectId)}`;
+                    window.location.href = `/project/index.html?id=${encodeURIComponent(projectId)}`;
                 }
 
                 return;
@@ -489,7 +491,7 @@ import Sidebar from "../components/Sidebar.astro";
         const { data, error } = await supabase.auth.getSession();
 
         if (error || !data.session) {
-            window.location.replace("/login");
+            window.location.replace("/login/index.html");
             return;
         }
 
@@ -497,7 +499,7 @@ import Sidebar from "../components/Sidebar.astro";
 
         supabase.auth.onAuthStateChange((event) => {
             if (event === "SIGNED_OUT") {
-            window.location.replace("/login");
+            window.location.replace("/login/index.html");
             }
         });
         });

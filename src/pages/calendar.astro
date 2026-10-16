@@ -6,14 +6,14 @@ import Sidebar from "../components/Sidebar.astro";
 <BaseLayout title="DevTask — Calendar">
     <Sidebar />
 
-    <main class="calendar-page">
+    <main class="calendar-page" data-page-cache>
         <header class="page-header">
         <div>
             <p class="eyebrow">PLAN YOUR WORK</p>
             <h1>Calendar<span>.</span></h1>
             <p class="subtitle">Keep track of your deadlines and upcoming tasks.</p>
         </div>
-        <a class="add-button" href="/tasks">+ Add Task</a>
+        <a class="add-button" href="/tasks/index.html">+ Add Task</a>
         </header>
 
         <section class="calendar-layout">
@@ -63,7 +63,7 @@ import Sidebar from "../components/Sidebar.astro";
             <p class="empty-state">Loading tasks...</p>
             </div>
 
-            <a class="view-tasks" href="/tasks">View all tasks <span>→</span></a>
+            <a class="view-tasks" href="/tasks/index.html">View all tasks <span>→</span></a>
         </aside>
         </section>
     </main>
@@ -198,7 +198,7 @@ import Sidebar from "../components/Sidebar.astro";
             <span class="empty-icon">◷</span>
             <h3>No tasks scheduled</h3>
             <p>There are no tasks due on this date.</p>
-            <a href="/tasks">Create a task →</a>
+            <a href="/tasks/index.html">Create a task →</a>
             </div>
         `;
         return;
@@ -233,7 +233,7 @@ import Sidebar from "../components/Sidebar.astro";
         const { data: { session } } = await supabase.auth.getSession();
 
         if (!session) {
-        window.location.href = "/login";
+        window.location.href = "/login/index.html";
         return;
         }
 
@@ -281,7 +281,7 @@ import Sidebar from "../components/Sidebar.astro";
 
     supabase.auth.onAuthStateChange((event) => {
         if (event === "SIGNED_OUT") {
-        window.location.href = "/login";
+        window.location.href = "/login/index.html";
         }
     });
 
