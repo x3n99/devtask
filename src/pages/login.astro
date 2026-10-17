@@ -50,7 +50,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 
       <p class="auth-footer">
         Don't have an account?
-        <a href="/register/index.html">Create one</a>
+        <a href="/register/">Create one</a>
       </p>
     </section>
   </main>
@@ -92,7 +92,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
       autofillBridge?.commitAutofill();
 
       window.dispatchEvent(new Event("devtask:clear-page-cache"));
-      window.location.assign("/index.html");
+      window.location.assign("/");
     } catch (error) {
       message.textContent =
         error instanceof Error

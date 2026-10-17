@@ -390,7 +390,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       checkbox.addEventListener("change", async () => {
         if (!isAuthenticated || String(task.id).startsWith("demo-")) {
           checkbox.checked = task.completed;
-          window.location.href = "/login/index.html";
+          window.location.href = "/login/";
           return;
         }
         const nextCompleted = checkbox.checked;
@@ -599,7 +599,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Visitors must log in before opening the task form.
     if (!isAuthenticated) {
       modalElement.hidden = true;
-      window.location.href = `/login/index.html?redirect=${encodeURIComponent(currentPath)}`;
+      window.location.href = `/login/?redirect=${encodeURIComponent(currentPath)}`;
       return;
     }
 
@@ -646,7 +646,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     if (!isAuthenticated) {
       closeModal();
-      window.location.href = "/login/index.html";
+      window.location.href = "/login/";
       return;
     }
 
@@ -807,7 +807,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   } catch (error) {
     console.error("DevTask session check failed:", error);
     if (isNativeApp) {
-      window.location.replace("/login/index.html");
+      window.location.replace("/login/");
       return;
     }
   } finally {
@@ -824,7 +824,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   if (!isAuthenticated) {
     if (isNativeApp) {
-      window.location.replace("/login/index.html");
+      window.location.replace("/login/");
       return;
     }
 
@@ -841,7 +841,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     function requireLogin(): boolean {
       if (isAuthenticated) return true;
 
-      window.location.href = "/login/index.html";
+      window.location.href = "/login/";
       return false;
     }
 
@@ -859,7 +859,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         target.classList.contains("task-checkbox") &&
         !isAuthenticated
       ) {
-        window.location.href = "/login/index.html";
+        window.location.href = "/login/";
       }
     });
 
@@ -870,14 +870,14 @@ document.addEventListener("DOMContentLoaded", async () => {
         target.closest(".edit-task, .delete-task") &&
         !isAuthenticated
       ) {
-        window.location.href = "/login/index.html";
+        window.location.href = "/login/";
       }
     });
 
     form.addEventListener("submit", (event) => {
       if (!isAuthenticated) {
         event.preventDefault();
-        window.location.href = "/login/index.html";
+        window.location.href = "/login/";
       }
     });
 

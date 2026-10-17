@@ -13,144 +13,144 @@ import TaskList from "../components/TaskList.astro";
     role="status"
     aria-live="polite"
   >
-    <p>Opening sign in...</p>
+    <p>DevTask</p>
   </main>
 
   <div id="dashboard-shell" hidden>
     <Sidebar />
 
     <main class="dashboard" id="dashboard-content" data-page-cache>
-    <header class="page-header">
-      <div>
-        <p class="eyebrow" id="workspace-date"></p>
-        <h1>Overview<span>.</span></h1>
-        <p class="page-description">
-          Here's what's happening with your tasks today.
-        </p>
-      </div>
-
-      <button class="create-button" id="create-task-button" type="button">
-        <span>+</span> New task
-      </button>
-    </header>
-
-    <section class="stats-grid" aria-label="Task statistics">
-      <StatCard
-        label="Total Tasks"
-        value=""
-        description="Tasks in your workspace"
-        icon="◈"
-        accent="purple"
-      />
-
-      <StatCard
-        label="Completed"
-        value=""
-        description="Tasks finished so far"
-        icon="✓"
-        accent="green"
-      />
-
-      <StatCard
-        label="In Progress"
-        value=""
-        description="Tasks currently active"
-        icon="↗"
-        accent="blue"
-      />
-
-      <StatCard
-        label="Overdue"
-        value=""
-        description="Tasks past their deadline"
-        icon="!"
-        accent="orange"
-      />
-    </section>
-
-    <section class="activity-grid">
-      <WeeklyProgress />
-      <section class="placeholder-panel">
-        <div class="panel-heading">
-          <div>
-            <h2>Today's focus</h2>
-            <p>Keep your priorities in sight.</p>
-          </div>
+      <header class="page-header">
+        <div>
+          <p class="eyebrow" id="workspace-date"></p>
+          <h1>Overview<span>.</span></h1>
+          <p class="page-description">
+            Here's what's happening with your tasks today.
+          </p>
         </div>
 
-        <div class="focus-task-list" id="todays-focus-list">
-          <div class="empty-chart">
-            <div class="chart-icon">✦</div>
-            <p>Loading your priorities...</p>
-            <span>Your priority tasks will appear here.</span>
-          </div>
-        </div>
+        <button class="create-button" id="create-task-button" type="button">
+          <span>+</span> New task
+        </button>
+      </header>
+
+      <section class="stats-grid" aria-label="Task statistics">
+        <StatCard
+          label="Total Tasks"
+          value=""
+          description="Tasks in your workspace"
+          icon="◈"
+          accent="purple"
+        />
+
+        <StatCard
+          label="Completed"
+          value=""
+          description="Tasks finished so far"
+          icon="✓"
+          accent="green"
+        />
+
+        <StatCard
+          label="In Progress"
+          value=""
+          description="Tasks currently active"
+          icon="↗"
+          accent="blue"
+        />
+
+        <StatCard
+          label="Overdue"
+          value=""
+          description="Tasks past their deadline"
+          icon="!"
+          accent="orange"
+        />
       </section>
-    </section>
-    <TaskList />
-    <div class="modal-overlay" id="task-modal" hidden>
-      <section
-        class="task-modal"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="modal-title"
-      >
-        <header class="modal-header">
-          <div>
-            <h2 id="modal-title">Create a new task</h2>
-            <p>Organize your next piece of work.</p>
-          </div>
 
-          <button
-            class="modal-close"
-            id="close-task-modal"
-            type="button"
-            aria-label="Close dialog">×</button
-          >
-        </header>
-
-        <form id="task-form">
-          <label for="task-title-input">Task name</label>
-          <input
-            id="task-title-input"
-            name="title"
-            type="text"
-            placeholder="e.g. Build dashboard"
-            maxlength="100"
-            required
-          />
-
-          <label for="task-project-input">Project</label>
-          <select id="task-project-input" name="project">
-            <option value="">Without project</option>
-          </select>
-
-          <div class="modal-fields">
+      <section class="activity-grid">
+        <WeeklyProgress />
+        <section class="placeholder-panel">
+          <div class="panel-heading">
             <div>
-              <label for="task-priority-input">Priority</label>
-              <select id="task-priority-input" name="priority">
-                <option value="Low">Low</option>
-                <option value="Medium" selected>Medium</option>
-                <option value="High">High</option>
-              </select>
-            </div>
-
-            <div>
-              <label for="task-due-input">Due date</label>
-              <input id="task-due-input" name="due" type="date" />
+              <h2>Today's focus</h2>
+              <p>Keep your priorities in sight.</p>
             </div>
           </div>
 
-          <div class="modal-actions">
-            <button class="cancel-button" id="cancel-task-modal" type="button"
-              >Cancel</button
+          <div class="focus-task-list" id="todays-focus-list">
+            <div class="empty-chart">
+              <div class="chart-icon">✦</div>
+              <p>Loading your priorities...</p>
+              <span>Your priority tasks will appear here.</span>
+            </div>
+          </div>
+        </section>
+      </section>
+      <TaskList />
+      <div class="modal-overlay" id="task-modal" hidden>
+        <section
+          class="task-modal"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="modal-title"
+        >
+          <header class="modal-header">
+            <div>
+              <h2 id="modal-title">Create a new task</h2>
+              <p>Organize your next piece of work.</p>
+            </div>
+
+            <button
+              class="modal-close"
+              id="close-task-modal"
+              type="button"
+              aria-label="Close dialog">×</button
             >
+          </header>
 
-            <button class="create-button" type="submit"> Create task </button>
-          </div>
-        </form>
-      </section>
-    </div>
+          <form id="task-form">
+            <label for="task-title-input">Task name</label>
+            <input
+              id="task-title-input"
+              name="title"
+              type="text"
+              placeholder="e.g. Build dashboard"
+              maxlength="100"
+              required
+            />
+
+            <label for="task-project-input">Project</label>
+            <select id="task-project-input" name="project">
+              <option value="">Without project</option>
+            </select>
+
+            <div class="modal-fields">
+              <div>
+                <label for="task-priority-input">Priority</label>
+                <select id="task-priority-input" name="priority">
+                  <option value="Low">Low</option>
+                  <option value="Medium" selected>Medium</option>
+                  <option value="High">High</option>
+                </select>
+              </div>
+
+              <div>
+                <label for="task-due-input">Due date</label>
+                <input id="task-due-input" name="due" type="date" />
+              </div>
+            </div>
+
+            <div class="modal-actions">
+              <button class="cancel-button" id="cancel-task-modal" type="button"
+                >Cancel</button
+              >
+
+              <button class="create-button" type="submit"> Create task </button>
+            </div>
+          </form>
+        </section>
+      </div>
     </main>
   </div>
 </BaseLayout>

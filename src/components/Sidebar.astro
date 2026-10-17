@@ -13,7 +13,7 @@ const currentSection =
 ---
 
 <header class="mobile-app-header">
-  <a class="mobile-brand" href="/index.html">
+  <a class="mobile-brand" href="/">
     <span class="mobile-brand-icon">D</span>
     <span>DevTask</span>
   </a>
@@ -21,7 +21,7 @@ const currentSection =
 </header>
 
 <aside class="sidebar" id="devtask-sidebar">
-  <a href="/index.html" class="brand">
+  <a href="/" class="brand">
     <span class="brand-icon">D</span>
     <span class="brand-name">devtask<span>.</span></span>
   </a>
@@ -31,27 +31,27 @@ const currentSection =
 
     <nav class="navigation" aria-label="Primary navigation">
       <a
-        href="/index.html"
+        href="/"
         class={`nav-item ${currentPath === "/" ? "active" : ""}`}
       >
         <span class="nav-icon">▦</span>
         <span>Overview</span>
       </a>
 
-      <a href="/tasks/index.html" class="nav-item">
+      <a href="/tasks/" class="nav-item">
         <span class="nav-icon">☑</span>
         <span>My Tasks</span>
       </a>
 
       <a
-        href="/projects/index.html"
+        href="/projects/"
         class={`nav-item ${currentPath === "/projects" ? "active" : ""}`}
       >
         <span class="nav-icon">◫</span>
         <span>Projects</span>
       </a>
 
-      <a href="/calendar/index.html" class="nav-item">
+      <a href="/calendar/" class="nav-item">
         <span class="nav-icon">▦</span>
         <span>Calendar</span>
       </a>
@@ -59,7 +59,7 @@ const currentSection =
   </div>
 
   <a
-    href="/profile/index.html"
+    href="/profile/"
     class={`sidebar-bottom ${currentPath === "/profile" ? "profile-active" : ""}`}
     aria-label="Open profile"
   >
@@ -74,7 +74,7 @@ const currentSection =
 <nav class="mobile-bottom-nav" aria-label="Primary navigation">
   <a
     class:list={["mobile-nav-item", currentPath === "/" && "active"]}
-    href="/index.html"
+    href="/"
     aria-current={currentPath === "/" ? "page" : undefined}
   >
     <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -87,7 +87,7 @@ const currentSection =
   </a>
   <a
     class:list={["mobile-nav-item", currentPath === "/tasks" && "active"]}
-    href="/tasks/index.html"
+    href="/tasks/"
     aria-current={currentPath === "/tasks" ? "page" : undefined}
   >
     <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -98,7 +98,7 @@ const currentSection =
   </a>
   <a
     class:list={["mobile-nav-item", currentSection === "Projects" && "active"]}
-    href="/projects/index.html"
+    href="/projects/"
     aria-current={currentSection === "Projects" ? "page" : undefined}
   >
     <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -109,7 +109,7 @@ const currentSection =
   </a>
   <a
     class:list={["mobile-nav-item", currentPath === "/calendar" && "active"]}
-    href="/calendar/index.html"
+    href="/calendar/"
     aria-current={currentPath === "/calendar" ? "page" : undefined}
   >
     <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -120,7 +120,7 @@ const currentSection =
   </a>
   <a
     class:list={["mobile-nav-item", currentPath === "/profile" && "active"]}
-    href="/profile/index.html"
+    href="/profile/"
     aria-current={currentPath === "/profile" ? "page" : undefined}
   >
     <svg viewBox="0 0 24 24" aria-hidden="true">

@@ -392,7 +392,7 @@ import Sidebar from "../components/Sidebar.astro";
                 const projectId = card?.dataset.projectId;
 
                 if (projectId && grid.contains(card)) {
-                    window.location.href = `/project/index.html?id=${encodeURIComponent(projectId)}`;
+                    window.location.href = `/project/?id=${encodeURIComponent(projectId)}`;
                 }
 
                 return;
@@ -491,7 +491,7 @@ import Sidebar from "../components/Sidebar.astro";
         const { data, error } = await supabase.auth.getSession();
 
         if (error || !data.session) {
-            window.location.replace("/login/index.html");
+            window.location.replace("/login/");
             return;
         }
 
@@ -499,7 +499,7 @@ import Sidebar from "../components/Sidebar.astro";
 
         supabase.auth.onAuthStateChange((event) => {
             if (event === "SIGNED_OUT") {
-            window.location.replace("/login/index.html");
+            window.location.replace("/login/");
             }
         });
         });
