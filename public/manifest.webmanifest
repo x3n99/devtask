@@ -1,0 +1,20 @@
+﻿{
+  "id": "/",
+  "name": "DevTask",
+  "short_name": "DevTask",
+  "description": "Personal task management and productivity",
+  "lang": "id",
+  "start_url": "/login",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#0d321f",
+  "theme_color": "#0d321f",
+  "icons": [
+    {
+      "src": "/favicon.png",
+      "sizes": "any",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
