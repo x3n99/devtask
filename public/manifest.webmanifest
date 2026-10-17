@@ -4,7 +4,7 @@
   "short_name": "DevTask",
   "description": "Personal task management and productivity",
   "lang": "id",
-  "start_url": "/login/",
+  "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "background_color": "#11131c",
