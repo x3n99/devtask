@@ -517,7 +517,12 @@ const currentSection =
   const currentRouteIndex = swipeRoutes.findIndex(
     (route) => (route === "/" ? "/" : route.replace(/\/$/, "")) === currentRoute,
   );
-  let touchStart: { x: number; y: number } | null = null;
+  let touchStart: {
+    x: number;
+    y: number;
+    scrollElement: HTMLElement | null;
+    scrollLeft: number;
+  } | null = null;
 
   function isSwipeExcluded(target: EventTarget | null): boolean {
     if (!(target instanceof Element)) return true;
@@ -528,6 +533,14 @@ const currentSection =
     ) {
       return true;
     }
+
+    return false;
+  }
+
+  function getHorizontalScrollElement(
+    target: EventTarget | null,
+  ): HTMLElement | null {
+    if (!(target instanceof Element)) return null;
 
     for (
       let element: HTMLElement | null =
@@ -540,14 +553,22 @@ const currentSection =
         element.scrollWidth > element.clientWidth &&
         (overflowX === "auto" || overflowX === "scroll")
       ) {
-        return true;
+        return element;
       }
     }
 
-    return false;
+    return null;
   }
 
   if (Capacitor.isNativePlatform()) {
+    document.querySelectorAll<HTMLAnchorElement>('a[href^="/"]').forEach((link) => {
+      const url = new URL(link.href, window.location.href);
+      if (url.pathname !== "/" && url.pathname.endsWith("/")) {
+        url.pathname += "index.html";
+        link.href = `${url.pathname}${url.search}${url.hash}`;
+      }
+    });
+
     document.addEventListener(
       "touchstart",
       (event) => {
@@ -566,7 +587,13 @@ const currentSection =
           return;
         }
 
-        touchStart = { x: touch.clientX, y: touch.clientY };
+        const scrollElement = getHorizontalScrollElement(event.target);
+        touchStart = {
+          x: touch.clientX,
+          y: touch.clientY,
+          scrollElement,
+          scrollLeft: scrollElement?.scrollLeft ?? 0,
+        };
       },
       { passive: true },
     );
@@ -582,14 +609,25 @@ const currentSection =
         const touch = event.changedTouches[0];
         const deltaX = touch.clientX - touchStart.x;
         const deltaY = touch.clientY - touchStart.y;
+        const horizontalScrollChanged =
+          touchStart.scrollElement &&
+          Math.abs(touchStart.scrollElement.scrollLeft - touchStart.scrollLeft) > 2;
         touchStart = null;
 
-        if (Math.abs(deltaX) < 80 || Math.abs(deltaY) > 60) return;
+        if (
+          horizontalScrollChanged ||
+          Math.abs(deltaX) < 80 ||
+          Math.abs(deltaY) > 60
+        ) {
+          return;
+        }
 
         const nextRouteIndex =
           currentRouteIndex + (deltaX < 0 ? 1 : -1);
         const nextRoute = swipeRoutes[nextRouteIndex];
-        if (nextRoute) window.location.assign(nextRoute);
+        const nativeRoute =
+          nextRoute && nextRoute !== "/" ? `${nextRoute}index.html` : nextRoute;
+        if (nativeRoute) window.location.assign(nativeRoute);
       },
       { passive: true },
     );
