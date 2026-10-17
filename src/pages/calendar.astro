@@ -20,7 +20,7 @@ import Sidebar from "../components/Sidebar.astro";
         <div class="calendar-panel">
             <div class="calendar-toolbar">
             <div>
-                <h2 id="month-title">Loading...</h2>
+                <h2 id="month-title" class="loading-placeholder">Loading...</h2>
                 <p id="month-subtitle">Your schedule at a glance</p>
             </div>
             <div class="month-controls">
@@ -41,7 +41,7 @@ import Sidebar from "../components/Sidebar.astro";
             </div>
 
             <div id="calendar-grid" class="calendar-grid">
-            <p class="loading">Loading calendar...</p>
+            <p class="loading loading-placeholder">Loading calendar...</p>
             </div>
 
             <div class="calendar-legend">
@@ -60,7 +60,7 @@ import Sidebar from "../components/Sidebar.astro";
             </div>
 
             <div id="agenda-list" class="agenda-list">
-            <p class="empty-state">Loading tasks...</p>
+            <p class="empty-state loading-placeholder">Loading tasks...</p>
             </div>
 
             <a class="view-tasks" href="/tasks/">View all tasks <span>→</span></a>
@@ -135,6 +135,7 @@ import Sidebar from "../components/Sidebar.astro";
         month: "long",
         year: "numeric",
         });
+        monthTitle.classList.remove("loading-placeholder");
 
         const firstDay = new Date(year, month, 1);
         const lastDay = new Date(year, month + 1, 0);

@@ -30,8 +30,8 @@ import Sidebar from "../components/Sidebar.astro";
                 <div class="profile-preview">
                     <div class="profile-avatar" id="profile-avatar">U</div>
                     <div class="preview-info">
-                        <strong id="preview-name">Loading...</strong>
-                        <span id="preview-email">Loading account...</span>
+                        <strong id="preview-name" class="loading-placeholder">Loading...</strong>
+                        <span id="preview-email" class="loading-placeholder">Loading account...</span>
                     </div>
                     <span class="account-badge">PERSONAL</span>
 
@@ -181,6 +181,8 @@ import Sidebar from "../components/Sidebar.astro";
         emailInput.value = user.email || "";
         previewName.textContent = name;
         previewEmail.textContent = user.email || "No email";
+        previewName.classList.remove("loading-placeholder");
+        previewEmail.classList.remove("loading-placeholder");
         avatar.textContent = getInitials(name);
         document.querySelector<HTMLElement>(".profile-page")?.setAttribute(
             "aria-busy",

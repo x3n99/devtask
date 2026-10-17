@@ -48,7 +48,7 @@ import Sidebar from "../components/Sidebar.astro";
             <header class="panel-header">
                 <div>
                     <h2>All tasks</h2>
-                    <p id="task-summary">Loading your tasks...</p>
+                    <p id="task-summary" class="loading-placeholder">Loading your tasks...</p>
                 </div>
                 <span class="task-count" id="task-count">0 tasks</span>
             </header>
@@ -86,7 +86,7 @@ import Sidebar from "../components/Sidebar.astro";
             </div>
 
             <div id="task-list" class="task-list" aria-live="polite">
-                <div class="loading-state">Loading tasks...</div>
+                <div class="loading-state loading-placeholder">Loading tasks...</div>
             </div>
         </section>
 
@@ -1029,6 +1029,7 @@ import Sidebar from "../components/Sidebar.astro";
 
             const completed = tasks.filter((task) => task.completed).length;
             taskSummary.textContent = `${completed} of ${tasks.length} tasks completed`;
+            taskSummary.classList.remove("loading-placeholder");
         };
 
         function confirmDeleteTask(taskTitle: string): Promise<boolean> {

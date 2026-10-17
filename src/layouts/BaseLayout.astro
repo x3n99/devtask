@@ -26,6 +26,8 @@ const { title = "DevTask" } = Astro.props;
     <link rel="icon" type="image/png" href="/favicon.png" />
     <title>{title}</title>
     <script is:inline>
+      document.documentElement.dataset.loadingDelay = "true";
+
       try {
         const dashboardPath =
           location.pathname.replace(/index\.html$/, "") || "/";
@@ -41,6 +43,10 @@ const { title = "DevTask" } = Astro.props;
       }
     </script>
     <style is:inline>
+      html[data-loading-delay="true"] .loading-placeholder {
+        visibility: hidden;
+      }
+
       html[data-dashboard-cached="true"] #dashboard-loading {
         display: none !important;
       }
@@ -50,6 +56,10 @@ const { title = "DevTask" } = Astro.props;
   <body>
     <slot />
     <script is:inline>
+      window.setTimeout(() => {
+        document.documentElement.removeAttribute("data-loading-delay");
+      }, 300);
+
       (() => {
         const cachePrefix = "devtask-page-cache:";
         const page = document.querySelector("[data-page-cache]");

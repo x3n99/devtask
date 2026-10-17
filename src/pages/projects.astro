@@ -24,7 +24,7 @@ import Sidebar from "../components/Sidebar.astro";
         <section class="projects-toolbar">
             <div>
                 <h2>All projects</h2>
-                <p id="projects-count">Loading projects...</p>
+                <p id="projects-count" class="loading-placeholder">Loading projects...</p>
             </div>
 
             <input
@@ -35,7 +35,7 @@ import Sidebar from "../components/Sidebar.astro";
             />
         </section>
 
-        <div id="projects-message" class="projects-message" role="status">
+        <div id="projects-message" class="projects-message loading-placeholder" role="status">
             Loading projects...
         </div>
 
@@ -272,6 +272,8 @@ import Sidebar from "../components/Sidebar.astro";
 
             countLabel.textContent =
             `${projects.length} ${projects.length === 1 ? "project" : "projects"}`;
+            countLabel.classList.remove("loading-placeholder");
+            message.classList.remove("loading-placeholder");
 
             if (filtered.length === 0) {
             grid.innerHTML = "";
@@ -336,7 +338,9 @@ import Sidebar from "../components/Sidebar.astro";
 
             if (projectError) {
             message.textContent = `Failed to load projects: ${projectError.message}`;
+            message.classList.remove("loading-placeholder");
             countLabel.textContent = "Unable to load projects";
+            countLabel.classList.remove("loading-placeholder");
             return;
             }
 
@@ -347,7 +351,9 @@ import Sidebar from "../components/Sidebar.astro";
 
             if (taskError) {
             message.textContent = `Failed to load task counts: ${taskError.message}`;
+            message.classList.remove("loading-placeholder");
             countLabel.textContent = "Unable to load projects";
+            countLabel.classList.remove("loading-placeholder");
             return;
             }
 

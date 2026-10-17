@@ -11,7 +11,7 @@ import Sidebar from "../components/Sidebar.astro";
         <span aria-hidden="true">←</span> Back to projects
         </a>
 
-        <div id="project-message" class="message" role="status">
+        <div id="project-message" class="message loading-placeholder" role="status">
         Loading project...
         </div>
 
@@ -248,6 +248,7 @@ import Sidebar from "../components/Sidebar.astro";
 
         const showMessage = (text: string) => {
             message.textContent = text;
+            message.classList.remove("loading-placeholder");
             message.hidden = false;
             content.hidden = true;
         };
@@ -520,6 +521,7 @@ import Sidebar from "../components/Sidebar.astro";
             projectCreated.textContent = `Created ${formatDate(project.created_at)}`;
 
             message.hidden = true;
+            message.classList.remove("loading-placeholder");
             content.hidden = false;
 
             renderTasks();
