@@ -505,7 +505,103 @@ const currentSection =
 </style>
 
 <script>
+  import { Capacitor } from "@capacitor/core";
   import { supabase } from "../lib/supabase";
+
+  const swipeRoutes = ["/", "/tasks/", "/projects/", "/calendar/", "/profile/"];
+  const currentPath = window.location.pathname
+    .replace(/index\.html$/, "")
+    .replace(/\/$/, "") || "/";
+  const currentRoute =
+    currentPath === "/project" ? "/projects" : currentPath;
+  const currentRouteIndex = swipeRoutes.findIndex(
+    (route) => (route === "/" ? "/" : route.replace(/\/$/, "")) === currentRoute,
+  );
+  let touchStart: { x: number; y: number } | null = null;
+
+  function isSwipeExcluded(target: EventTarget | null): boolean {
+    if (!(target instanceof Element)) return true;
+    if (
+      target.closest(
+        "a, button, input, textarea, select, [contenteditable='true'], [role='dialog'], [data-no-swipe]",
+      )
+    ) {
+      return true;
+    }
+
+    for (
+      let element: HTMLElement | null =
+        target instanceof HTMLElement ? target : target.parentElement;
+      element;
+      element = element.parentElement
+    ) {
+      const overflowX = window.getComputedStyle(element).overflowX;
+      if (
+        element.scrollWidth > element.clientWidth &&
+        (overflowX === "auto" || overflowX === "scroll")
+      ) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  if (Capacitor.isNativePlatform()) {
+    document.addEventListener(
+      "touchstart",
+      (event) => {
+        if (
+          !window.matchMedia("(max-width: 760px)").matches ||
+          event.touches.length !== 1 ||
+          isSwipeExcluded(event.target)
+        ) {
+          touchStart = null;
+          return;
+        }
+
+        const touch = event.touches[0];
+        if (touch.clientX < 24 || touch.clientX > window.innerWidth - 24) {
+          touchStart = null;
+          return;
+        }
+
+        touchStart = { x: touch.clientX, y: touch.clientY };
+      },
+      { passive: true },
+    );
+
+    document.addEventListener(
+      "touchend",
+      (event) => {
+        if (!touchStart || event.changedTouches.length !== 1) {
+          touchStart = null;
+          return;
+        }
+
+        const touch = event.changedTouches[0];
+        const deltaX = touch.clientX - touchStart.x;
+        const deltaY = touch.clientY - touchStart.y;
+        touchStart = null;
+
+        if (Math.abs(deltaX) < 80 || Math.abs(deltaY) > 60) return;
+
+        const nextRouteIndex =
+          currentRouteIndex + (deltaX < 0 ? 1 : -1);
+        const nextRoute = swipeRoutes[nextRouteIndex];
+        if (nextRoute) window.location.assign(nextRoute);
+      },
+      { passive: true },
+    );
+
+    document.addEventListener(
+      "touchcancel",
+      () => {
+        touchStart = null;
+      },
+      { passive: true },
+    );
+  }
 
   const userNameElement = document.querySelector<HTMLElement>("#user-name");
   const userAvatarElement = document.querySelector<HTMLElement>("#user-avatar");
