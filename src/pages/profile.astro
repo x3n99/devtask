@@ -123,6 +123,7 @@ import Sidebar from "../components/Sidebar.astro";
 
 <script>
     import { supabase } from "../lib/supabase";
+    import { navigateTo } from "../lib/navigation";
 
     const nameInput = document.querySelector<HTMLInputElement>("#full-name")!;
     const emailInput = document.querySelector<HTMLInputElement>("#email")!;
@@ -165,7 +166,7 @@ import Sidebar from "../components/Sidebar.astro";
         const { data, error } = await supabase.auth.getUser();
 
         if (error || !data.user) {
-            window.location.href = "/login/";
+            navigateTo("/login/");
             return;
         }
 
@@ -213,7 +214,7 @@ import Sidebar from "../components/Sidebar.astro";
         const { data: userData, error: userError } = await supabase.auth.getUser();
 
         if (userError || !userData.user) {
-            window.location.href = "/login/";
+            navigateTo("/login/");
             return;
         }
 
@@ -311,7 +312,7 @@ import Sidebar from "../components/Sidebar.astro";
             return;
         }
 
-        window.location.href = "/login/";
+        navigateTo("/login/");
     });
 
     loadProfile();

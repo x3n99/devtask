@@ -71,6 +71,7 @@ import Sidebar from "../components/Sidebar.astro";
 
 <script>
     import { supabase } from "../lib/supabase.js";
+    import { navigateTo } from "../lib/navigation.js";
 
     type CalendarTask = {
         id: string;
@@ -233,7 +234,7 @@ import Sidebar from "../components/Sidebar.astro";
         const { data: { session } } = await supabase.auth.getSession();
 
         if (!session) {
-        window.location.href = "/login/";
+        navigateTo("/login/");
         return;
         }
 
@@ -281,7 +282,7 @@ import Sidebar from "../components/Sidebar.astro";
 
     supabase.auth.onAuthStateChange((event) => {
         if (event === "SIGNED_OUT") {
-        window.location.href = "/login/";
+        navigateTo("/login/");
         }
     });
 

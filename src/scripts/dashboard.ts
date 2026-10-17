@@ -1,5 +1,6 @@
 import { Capacitor } from "@capacitor/core";
 import { supabase } from "../lib/supabase.js";
+import { navigateTo } from "../lib/navigation.js";
 
 type Task = {
   id: string;
@@ -390,7 +391,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       checkbox.addEventListener("change", async () => {
         if (!isAuthenticated || String(task.id).startsWith("demo-")) {
           checkbox.checked = task.completed;
-          window.location.href = "/login/";
+          navigateTo("/login/");
           return;
         }
         const nextCompleted = checkbox.checked;
@@ -599,7 +600,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Visitors must log in before opening the task form.
     if (!isAuthenticated) {
       modalElement.hidden = true;
-      window.location.href = `/login/?redirect=${encodeURIComponent(currentPath)}`;
+      navigateTo(`/login/?redirect=${encodeURIComponent(currentPath)}`);
       return;
     }
 
@@ -646,7 +647,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     if (!isAuthenticated) {
       closeModal();
-      window.location.href = "/login/";
+      navigateTo("/login/");
       return;
     }
 
@@ -807,7 +808,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   } catch (error) {
     console.error("DevTask session check failed:", error);
     if (isNativeApp) {
-      window.location.replace("/login/");
+      navigateTo("/login/", true);
       return;
     }
   } finally {
@@ -824,7 +825,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   if (!isAuthenticated) {
     if (isNativeApp) {
-      window.location.replace("/login/");
+      navigateTo("/login/", true);
       return;
     }
 
@@ -841,7 +842,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     function requireLogin(): boolean {
       if (isAuthenticated) return true;
 
-      window.location.href = "/login/";
+      navigateTo("/login/");
       return false;
     }
 
@@ -859,7 +860,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         target.classList.contains("task-checkbox") &&
         !isAuthenticated
       ) {
-        window.location.href = "/login/";
+        navigateTo("/login/");
       }
     });
 
@@ -870,14 +871,14 @@ document.addEventListener("DOMContentLoaded", async () => {
         target.closest(".edit-task, .delete-task") &&
         !isAuthenticated
       ) {
-        window.location.href = "/login/";
+        navigateTo("/login/");
       }
     });
 
     form.addEventListener("submit", (event) => {
       if (!isAuthenticated) {
         event.preventDefault();
-        window.location.href = "/login/";
+        navigateTo("/login/");
       }
     });
 

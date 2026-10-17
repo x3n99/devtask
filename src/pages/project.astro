@@ -154,6 +154,7 @@ import Sidebar from "../components/Sidebar.astro";
 
     <script>
         import { supabase } from "../lib/supabase.js";
+        import { navigateTo } from "../lib/navigation.js";
 
         type Project = {
         id: string;
@@ -260,7 +261,7 @@ import Sidebar from "../components/Sidebar.astro";
             await supabase.auth.getSession();
 
         if (sessionError || !sessionData.session) {
-            window.location.replace("/login/");
+            navigateTo("/login/", true);
             return;
         }
 
@@ -528,7 +529,7 @@ import Sidebar from "../components/Sidebar.astro";
 
         supabase.auth.onAuthStateChange((event) => {
             if (event === "SIGNED_OUT") {
-            window.location.replace("/login/");
+            navigateTo("/login/", true);
             }
         });
         });

@@ -100,6 +100,7 @@ import Sidebar from "../components/Sidebar.astro";
 
     <script>
         import { supabase } from "../lib/supabase.js";
+        import { navigateTo } from "../lib/navigation.js";
 
         type Project = {
         id: string;
@@ -392,7 +393,7 @@ import Sidebar from "../components/Sidebar.astro";
                 const projectId = card?.dataset.projectId;
 
                 if (projectId && grid.contains(card)) {
-                    window.location.href = `/project/?id=${encodeURIComponent(projectId)}`;
+                    navigateTo(`/project/?id=${encodeURIComponent(projectId)}`);
                 }
 
                 return;
@@ -491,7 +492,7 @@ import Sidebar from "../components/Sidebar.astro";
         const { data, error } = await supabase.auth.getSession();
 
         if (error || !data.session) {
-            window.location.replace("/login/");
+            navigateTo("/login/", true);
             return;
         }
 
@@ -499,7 +500,7 @@ import Sidebar from "../components/Sidebar.astro";
 
         supabase.auth.onAuthStateChange((event) => {
             if (event === "SIGNED_OUT") {
-            window.location.replace("/login/");
+            navigateTo("/login/", true);
             }
         });
         });
