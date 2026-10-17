@@ -16,6 +16,7 @@ export function navigateTo(path: string, replace = false): void {
   }
 
   const target = `${url.pathname}${url.search}${url.hash}`;
+  window.dispatchEvent(new Event("devtask:cache-current-page"));
   if (replace) {
     window.location.replace(target);
   } else {

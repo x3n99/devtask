@@ -783,6 +783,11 @@ document.addEventListener("DOMContentLoaded", async () => {
   const isNativeApp = Capacitor.isNativePlatform();
   const workspaceDate = document.querySelector<HTMLElement>("#workspace-date");
 
+  if (isNativeApp) {
+    if (dashboardLoading) dashboardLoading.hidden = true;
+    if (dashboardShell) dashboardShell.hidden = false;
+  }
+
   if (workspaceDate) {
     workspaceDate.textContent =
       new Date()

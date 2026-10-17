@@ -506,6 +506,7 @@ const currentSection =
 
 <script>
   import { Capacitor } from "@capacitor/core";
+  import { navigateTo } from "../lib/navigation";
   import { supabase } from "../lib/supabase";
 
   const swipeRoutes = ["/", "/tasks/", "/projects/", "/calendar/", "/profile/"];
@@ -627,7 +628,7 @@ const currentSection =
         const nextRoute = swipeRoutes[nextRouteIndex];
         const nativeRoute =
           nextRoute && nextRoute !== "/" ? `${nextRoute}index.html` : nextRoute;
-        if (nativeRoute) window.location.assign(nativeRoute);
+        if (nativeRoute) navigateTo(nativeRoute);
       },
       { passive: true },
     );

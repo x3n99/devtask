@@ -63,6 +63,7 @@ const { title = "DevTask" } = Astro.props;
             if (cachedMarkup) {
               page.innerHTML = cachedMarkup;
               page.dataset.pageCacheRestored = "true";
+              page.removeAttribute("aria-busy");
 
               const dashboardShell =
                 document.querySelector<HTMLElement>("#dashboard-shell");
@@ -77,7 +78,7 @@ const { title = "DevTask" } = Astro.props;
               document.documentElement.removeAttribute("data-dashboard-cached");
             }
 
-            window.addEventListener("pagehide", () => {
+            const cacheCurrentPage = () => {
               const openDialog = page.querySelector(
                 '[role="dialog"]:not([hidden])',
               );
@@ -118,7 +119,43 @@ const { title = "DevTask" } = Astro.props;
               } catch (error) {
                 console.warn("Could not cache the current page.", error);
               }
-            });
+            };
+
+            window.addEventListener("devtask:cache-current-page", cacheCurrentPage);
+            window.addEventListener("pagehide", cacheCurrentPage);
+
+            document.addEventListener(
+              "click",
+              (event) => {
+                if (
+                  event.defaultPrevented ||
+                  !(event.target instanceof Element) ||
+                  (event instanceof MouseEvent &&
+                    (event.button !== 0 ||
+                      event.metaKey ||
+                      event.ctrlKey ||
+                      event.shiftKey ||
+                      event.altKey))
+                ) {
+                  return;
+                }
+
+                const link = event.target.closest<HTMLAnchorElement>("a[href]");
+                if (
+                  !link ||
+                  link.hasAttribute("download") ||
+                  (link.target && link.target !== "_self")
+                ) {
+                  return;
+                }
+
+                const destination = new URL(link.href, window.location.href);
+                if (destination.origin === window.location.origin) {
+                  cacheCurrentPage();
+                }
+              },
+              true,
+            );
           } catch (error) {
             console.warn("Could not restore the cached page.", error);
           }
