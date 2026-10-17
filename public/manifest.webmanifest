@@ -7,8 +7,8 @@
   "start_url": "/login",
   "scope": "/",
   "display": "standalone",
-  "background_color": "#0d321f",
-  "theme_color": "#0d321f",
+  "background_color": "#11131c",
+  "theme_color": "#11131c",
   "icons": [
     {
       "src": "/favicon.png",
